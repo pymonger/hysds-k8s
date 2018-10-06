@@ -6,11 +6,11 @@ spec:
   containers:
   - name: mozart-es
     image: hysds/elasticsearch:1.7
-    command: ["elasticsearch"]
-    args: ["-Des.node.name='mozart-es'",
-           "-Des.cluster.name='resource_cluster'",
-           "-Des.bootstrap.mlockall=true",
-           "-Des.network.host=0" ]
+    command: [ "elasticsearch" ]
+    args: [ "-Des.node.name='mozart-es'",
+            "-Des.cluster.name='resource_cluster'",
+            "-Des.bootstrap.mlockall=true",
+            "-Des.network.host=0" ]
     ports:
     - containerPort: 9200
       name: http

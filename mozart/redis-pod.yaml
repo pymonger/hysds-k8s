@@ -5,7 +5,9 @@ metadata:
 spec:
   containers:
   - name: mozart-redis
-    image: kubernetes/redis:v1
+    image: hysds/redis:latest
+    command: [ "redis-server" ]
+    args: [ "/redis-master/redis.conf" ]
     env:
     - name: MASTER
       value: "true"
@@ -15,7 +17,7 @@ spec:
       limits:
         cpu: "0.1"
     volumeMounts:
-    - mountPath: /redis-master-data
+    - mountPath: /data/redis
       name: data
     - mountPath: /redis-master
       name: config
