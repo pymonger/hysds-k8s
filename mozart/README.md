@@ -223,3 +223,206 @@
        "message" : "trying out Elasticsearch"
    }}
    ```
+
+## RabbitMQ
+1. Create ConfigMap for rabbitmq:
+   ```
+   kubectl create configmap mozart-rabbitmq-config --from-file=rabbitmq-config \
+     --from-file=rabbitmq-server
+   ```
+1. Examine the ConfigMap:
+   ```
+   kubectl get configmap mozart-rabbitmq-config -o yaml
+   apiVersion: v1
+   data:
+     rabbitmq-config: |
+       [
+         { rabbit,
+           [
+             { loopback_users, [] },
+             { heartbeat, 300 },
+             { vm_memory_high_watermark, 100 },
+             { tcp_listen_options, [ binary,
+                                     { packet, raw },
+                                     { reuseaddr, true },
+                                     { backlog, 128 },
+                                     { nodelay, true },
+                                     { exit_on_close, false },
+                                     { keepalive, true }
+                                  ]
+             }
+           ]
+         }
+       ].
+     rabbitmq-server: |
+       # This file is sourced by /etc/init.d/rabbitmq-server. Its primary
+       # reason for existing is to allow adjustment of system limits for the
+       # rabbitmq-server process.
+       #
+       # Maximum number of open file handles. This will need to be increased
+       # to handle many simultaneous connections. Refer to the system
+       # documentation for ulimit (in man bash) for more information.
+       #
+       ulimit -n 102400
+   kind: ConfigMap
+   metadata:
+     creationTimestamp: 2018-10-06T21:28:08Z
+     name: mozart-rabbitmq-config
+     namespace: default
+     resourceVersion: "23163"
+     selfLink: /api/v1/namespaces/default/configmaps/mozart-rabbitmq-config
+     uid: b807fa29-c9ae-11e8-af6e-fa163e051185
+   ```
+1. Create the pod:
+   ```
+   kubectl create -f rabbitmq-pod.yaml
+   ```
+1. Verify pod is running:
+   ```
+   kubectl get pod mozart-rabbitmq
+   NAME              READY   STATUS    RESTARTS   AGE
+   mozart-rabbitmq   1/1     Running   0          48s
+   ```
+   Describe pods:
+   ```
+   kubectl describe pod mozart-rabbitmq
+   Name:               mozart-rabbitmq
+   Namespace:          default
+   Priority:           0
+   PriorityClassName:  <none>
+   Node:               js-156-76.jetstream-cloud.org/172.28.26.11
+   Start Time:         Sat, 06 Oct 2018 17:47:47 -0400
+   Labels:             <none>
+   Annotations:        <none>
+   Status:             Running
+   IP:                 10.36.0.1
+   Containers:
+     mozart-rabbitmq:
+       Container ID:   docker://96dbb358956902a962d646dff87ecb513ee01f555d3a3f9dc3c2785daafdfdeb
+       Image:          hysds/rabbitmq:latest
+       Image ID:       docker-pullable://hysds/rabbitmq@sha256:8792a5cfca8ad7f6131145eb6f2cff1bd93be78fce580691d34d091a27f72a4a
+       Ports:          5672/TCP, 15672/TCP
+       Host Ports:     0/TCP, 0/TCP
+       State:          Running
+         Started:      Sat, 06 Oct 2018 17:48:03 -0400
+       Ready:          True
+       Restart Count:  0
+       Limits:
+         cpu:  100m
+       Requests:
+         cpu:        100m
+       Environment:  <none>
+       Mounts:
+         /etc/default/rabbitmq-server from config (rw)
+         /etc/rabbitmq/rabbitmq.config from config (rw)
+         /var/lib/rabbitmq from data (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from default-token-jc59x (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     data:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+     config:
+       Type:      ConfigMap (a volume populated by a ConfigMap)
+       Name:      mozart-rabbitmq-config
+       Optional:  false
+     default-token-jc59x:
+       Type:        Secret (a volume populated by a Secret)
+       SecretName:  default-token-jc59x
+       Optional:    false
+   QoS Class:       Burstable
+   Node-Selectors:  <none>
+   Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                    node.kubernetes.io/unreachable:NoExecute for 300s
+   Events:
+     Type    Reason     Age    From                                    Message
+     ----    ------     ----   ----                                    -------
+     Normal  Scheduled  2m21s  default-scheduler                       Successfully assigned default/mozart-rabbitmq to js-156-76.jetstream-cloud.org
+     Normal  Pulling    2m19s  kubelet, js-156-76.jetstream-cloud.org  pulling image "hysds/rabbitmq:latest"
+     Normal  Pulled     2m6s   kubelet, js-156-76.jetstream-cloud.org  Successfully pulled image "hysds/rabbitmq:latest"
+     Normal  Created    2m6s   kubelet, js-156-76.jetstream-cloud.org  Created container
+     Normal  Started    2m5s   kubelet, js-156-76.jetstream-cloud.org  Started container
+   ```
+1. Use kubectl exec to enter the pod and run rabbitmqctl to verify that the configuration was correctly applied:
+   ```
+   kubectl exec -ti mozart-rabbitmq rabbitmqctl status
+   Status of node rabbit@mozart-rabbitmq ...
+   [{pid,168},
+    {running_applications,
+        [{rabbitmq_management,"RabbitMQ Management Console","3.7.8"},
+         {rabbitmq_web_dispatch,"RabbitMQ Web Dispatcher","3.7.8"},
+         {rabbitmq_management_agent,"RabbitMQ Management Agent","3.7.8"},
+         {amqp_client,"RabbitMQ AMQP Client","3.7.8"},
+         {rabbit,"RabbitMQ","3.7.8"},
+         {mnesia,"MNESIA  CXC 138 12","4.15.3.1"},
+         {rabbit_common,
+             "Modules shared by rabbitmq-server and rabbitmq-erlang-client",
+             "3.7.8"},
+         {cowboy,"Small, fast, modern HTTP server.","2.2.2"},
+         {ranch_proxy_protocol,"Ranch Proxy Protocol Transport","1.5.0"},
+         {ranch,"Socket acceptor pool for TCP protocols.","1.5.0"},
+         {ssl,"Erlang/OTP SSL application","8.2.6.2"},
+         {public_key,"Public key infrastructure","1.5.2"},
+         {asn1,"The Erlang ASN1 compiler version 5.0.5.1","5.0.5.1"},
+         {cowlib,"Support library for manipulating Web protocols.","2.1.0"},
+         {jsx,"a streaming, evented json parsing toolkit","2.8.2"},
+         {inets,"INETS  CXC 138 49","6.5.2.2"},
+         {os_mon,"CPO  CXC 138 46","2.4.4"},
+         {recon,"Diagnostic tools for production use","2.3.2"},
+         {xmerl,"XML parser","1.3.16"},
+         {crypto,"CRYPTO","4.2.2.1"},
+         {lager,"Erlang logging framework","3.6.3"},
+         {goldrush,"Erlang event stream processor","0.1.9"},
+         {compiler,"ERTS  CXC 138 10","7.1.5.1"},
+         {syntax_tools,"Syntax tools","2.1.4.1"},
+         {syslog,"An RFC 3164 and RFC 5424 compliant logging framework.","3.4.3"},
+         {sasl,"SASL  CXC 138 11","3.1.2"},
+         {stdlib,"ERTS  CXC 138 10","3.4.5"},
+         {kernel,"ERTS  CXC 138 10","5.4.3.2"}]},
+    {os,{unix,linux}},
+    {erlang_version,
+        "Erlang/OTP 20 [erts-9.3.3.3] [source] [64-bit] [smp:2:2] [ds:2:2:10] [async-threads:64] [hipe] [kernel-poll:true]\n"},
+    {memory,
+        [{connection_readers,0},
+         {connection_writers,0},
+         {connection_channels,0},
+         {connection_other,2840},
+         {queue_procs,0},
+         {queue_slave_procs,0},
+         {plugins,763392},
+         {other_proc,26525648},
+         {metrics,195072},
+         {mgmt_db,142424},
+         {mnesia,73720},
+         {other_ets,2224552},
+         {binary,161912},
+         {msg_index,29296},
+         {code,28588778},
+         {atom,1131721},
+         {other_system,10481213},
+         {allocated_unused,5111368},
+         {reserved_unallocated,524288},
+         {strategy,rss},
+         {total,[{erlang,70320568},{rss,75956224},{allocated,75431936}]}]},
+    {alarms,[]},
+    {listeners,[{clustering,25672,"::"},{amqp,5672,"::"},{http,15672,"::"}]},
+    {vm_memory_calculation_strategy,rss},
+    {vm_memory_high_watermark,100},
+    {vm_memory_limit,3974053888},
+    {disk_free_limit,50000000},
+    {disk_free,13799059456},
+    {file_descriptors,
+        [{total_limit,65436},
+         {total_used,2},
+         {sockets_limit,58890},
+         {sockets_used,0}]},
+    {processes,[{limit,1048576},{used,371}]},
+    {run_queue,0},
+    {uptime,107},
+    {kernel,{net_ticktime,60}}]
+   ```
