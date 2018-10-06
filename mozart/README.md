@@ -11,49 +11,110 @@
    apiVersion: v1
    data:
      redis-config: |
-       maxmemory 2mb
-       maxmemory-policy allkeys-lru
+       bind 0.0.0.0
+       protected-mode no
+       port 6379
+       tcp-backlog 65535
+       unixsocket /tmp/redis.sock
+       unixsocketperm 777
+       timeout 300
+       tcp-keepalive 300
+       daemonize no
+       supervised no
+       pidfile /var/run/redis/redis.pid
+       loglevel notice
+       logfile /var/log/redis/redis.log
+       databases 16
+       save 900 1
+       save 300 10
+       save 60 10000
+       stop-writes-on-bgsave-error yes
+       rdbcompression yes
+       rdbchecksum yes
+       dbfilename dump.rdb
+       dir /data/redis
+       slave-serve-stale-data yes
+       slave-read-only yes
+       repl-diskless-sync no
+       repl-diskless-sync-delay 5
+       repl-disable-tcp-nodelay no
+       slave-priority 100
+       maxclients 65535
+       appendonly no
+       appendfilename "appendonly.aof"
+       appendfsync everysec
+       no-appendfsync-on-rewrite no
+       auto-aof-rewrite-percentage 100
+       auto-aof-rewrite-min-size 64mb
+       aof-load-truncated yes
+       lua-time-limit 5000
+       slowlog-log-slower-than 10000
+       slowlog-max-len 128
+       latency-monitor-threshold 0
+       notify-keyspace-events ""
+       hash-max-ziplist-entries 512
+       hash-max-ziplist-value 64
+       list-max-ziplist-size -2
+       list-compress-depth 0
+       set-max-intset-entries 512
+       zset-max-ziplist-entries 128
+       zset-max-ziplist-value 64
+       hll-sparse-max-bytes 3000
+       activerehashing yes
+       client-output-buffer-limit normal 0 0 0
+       client-output-buffer-limit slave 256mb 64mb 60
+       client-output-buffer-limit pubsub 32mb 8mb 60
+       hz 10
+       aof-rewrite-incremental-fsync yes
    kind: ConfigMap
    metadata:
-     creationTimestamp: 2018-10-06T19:06:24Z
+     creationTimestamp: 2018-10-06T23:15:43Z
      name: mozart-redis-config
      namespace: default
-     resourceVersion: "10211"
+     resourceVersion: "33134"
      selfLink: /api/v1/namespaces/default/configmaps/mozart-redis-config
-     uid: eb8c9bd5-c99a-11e8-af6e-fa163e051185
+     uid: bfa21fad-c9bd-11e8-af6e-fa163e051185
    ```
-1. Create the pod:
+1. Create the `mozart-redis` service:
    ```
-   kubectl create -f redis-pod.yaml
+   kubectl create -f mozart-redis.yaml
+   service/mozart-redis created
+   deployment.apps/mozart-redis created
    ```
-1. Verify pod is running:
+1. Verify pods are running:
    ```
-   kubectl get pods
-   NAME           READY   STATUS    RESTARTS   AGE
-   mozart-redis   1/1     Running   0          44s
+   kubectl get pod -l run=mozart-redis
+   NAME                            READY   STATUS    RESTARTS   AGE
+   mozart-redis-5b785957b6-8bnbb   1/1     Running   0          2m16s
    ```
    Describe pods:
    ```
-   kubectl describe pods
-   Name:               mozart-redis
+   kubectl describe pod -l run=mozart-redis
+   Name:               mozart-redis-5b785957b6-8bnbb
    Namespace:          default
    Priority:           0
    PriorityClassName:  <none>
    Node:               js-170-15.jetstream-cloud.org/172.28.26.10
-   Start Time:         Sat, 06 Oct 2018 15:22:21 -0400
-   Labels:             <none>
+   Start Time:         Sat, 06 Oct 2018 18:23:03 -0400
+   Labels:             pod-template-hash=5b785957b6
+                       run=mozart-redis
    Annotations:        <none>
    Status:             Running
    IP:                 10.42.0.1
+   Controlled By:      ReplicaSet/mozart-redis-5b785957b6
    Containers:
      mozart-redis:
-       Container ID:   docker://5af2f75baf6dbdeaa2b51d1efed0bee241ec8a033365536052dde33f71fffd48
-       Image:          kubernetes/redis:v1
-       Image ID:       docker-pullable://kubernetes/redis@sha256:8da3f7cbe05e3446215a6931f1c125c38bde03383145fcc3292319bab5b1a6cf
-       Port:           6379/TCP
-       Host Port:      0/TCP
+       Container ID:  docker://7d46adaae66ad4438d584b0940c029e3d7801bdce87b904bad8ec9da36a69a1a
+       Image:         hysds/redis:latest
+       Image ID:      docker-pullable://hysds/redis@sha256:10bb284335c1650712f09d072026aef5861ea55a4eebbd62fb53f1b035239af5
+       Port:          6379/TCP
+       Host Port:     0/TCP
+       Command:
+         redis-server
+       Args:
+         /redis-master/redis.conf
        State:          Running
-         Started:      Sat, 06 Oct 2018 15:22:42 -0400
+         Started:      Sat, 06 Oct 2018 18:23:07 -0400
        Ready:          True
        Restart Count:  0
        Limits:
@@ -63,8 +124,8 @@
        Environment:
          MASTER:  true
        Mounts:
+         /data/redis from data (rw)
          /redis-master from config (rw)
-         /redis-master-data from data (rw)
          /var/run/secrets/kubernetes.io/serviceaccount from default-token-jc59x (ro)
    Conditions:
      Type              Status
@@ -89,24 +150,127 @@
    Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
                     node.kubernetes.io/unreachable:NoExecute for 300s
    Events:
-     Type    Reason     Age   From                                    Message
-     ----    ------     ----  ----                                    -------
-     Normal  Scheduled  72s   default-scheduler                       Successfully assigned default/mozart-redis to js-170-15.jetstream-cloud.org
-     Normal  Pulling    70s   kubelet, js-170-15.jetstream-cloud.org  pulling image "kubernetes/redis:v1"
-     Normal  Pulled     52s   kubelet, js-170-15.jetstream-cloud.org  Successfully pulled image "kubernetes/redis:v1"
-     Normal  Created    51s   kubelet, js-170-15.jetstream-cloud.org  Created container
-     Normal  Started    51s   kubelet, js-170-15.jetstream-cloud.org  Started container
+     Type    Reason     Age    From                                    Message
+     ----    ------     ----   ----                                    -------
+     Normal  Scheduled  2m55s  default-scheduler                       Successfully assigned default/mozart-redis-5b785957b6-8bnbb to js-170-15.jetstream-cloud.org
+     Normal  Pulling    2m53s  kubelet, js-170-15.jetstream-cloud.org  pulling image "hysds/redis:latest"
+     Normal  Pulled     2m52s  kubelet, js-170-15.jetstream-cloud.org  Successfully pulled image "hysds/redis:latest"
+     Normal  Created    2m52s  kubelet, js-170-15.jetstream-cloud.org  Created container
+     Normal  Started    2m51s  kubelet, js-170-15.jetstream-cloud.org  Started container
+   ```
+1. Verify deployment is running:
+   ```
+   kubectl get deploy mozart-redis
+   NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+   mozart-redis   1         1         1            1           4m43s
+   ```
+   Describe deployment:
+   ```
+   kubectl describe deploy mozart-redis
+   Name:                   mozart-redis
+   Namespace:              default
+   CreationTimestamp:      Sat, 06 Oct 2018 18:23:03 -0400
+   Labels:                 <none>
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               run=mozart-redis
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  run=mozart-redis
+     Containers:
+      mozart-redis:
+       Image:      hysds/redis:latest
+       Port:       6379/TCP
+       Host Port:  0/TCP
+       Command:
+         redis-server
+       Args:
+         /redis-master/redis.conf
+       Limits:
+         cpu:  100m
+       Environment:
+         MASTER:  true
+       Mounts:
+         /data/redis from data (rw)
+         /redis-master from config (rw)
+     Volumes:
+      data:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+      config:
+       Type:      ConfigMap (a volume populated by a ConfigMap)
+       Name:      mozart-redis-config
+       Optional:  false
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   mozart-redis-5b785957b6 (1/1 replicas created)
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  5m22s  deployment-controller  Scaled up replica set mozart-redis-5b785957b6 to 1
+   ```
+1. Verify service is running:
+   ```
+   kubectl get service mozart-redis
+   NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+   mozart-redis   ClusterIP   10.108.202.234   <none>        6379/TCP   6m20s
+   ```
+   Describe service:
+   ```
+   kubectl describe service mozart-redis
+   Name:              mozart-redis
+   Namespace:         default
+   Labels:            run=mozart-redis
+   Annotations:       <none>
+   Selector:          run=mozart-redis
+   Type:              ClusterIP
+   IP:                10.108.202.234
+   Port:              <unset>  6379/TCP
+   TargetPort:        6379/TCP
+   Endpoints:         10.42.0.1:6379
+   Session Affinity:  None
+   Events:            <none>
    ```
 1. Use kubectl exec to enter the pod and run the redis-cli tool to verify that the configuration was correctly applied:
    ```
-   kubectl exec -it mozart-redis redis-cli
-   127.0.0.1:6379> CONFIG GET maxmemory
-   1) "maxmemory"
-   2) "2097152"
-   127.0.0.1:6379> CONFIG GET maxmemory-policy
-   1) "maxmemory-policy"
-   2) "allkeys-lru"
+   kubectl exec -ti $(kubectl get pod -l run=mozart-redis | grep -v NAME | awk '{print $1}') redis-cli
+   127.0.0.1:6379> CONFIG GET dir
+   1) "dir"
+   2) "/data/redis"
    127.0.0.1:6379> quit
+   ```
+1. Verify that service is reachable from any pod in the cluster:
+   ```
+   kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
+   kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+   If you don't see a command prompt, try pressing enter.
+   ops@test-verdi-79cc7bb54d-p7wgm:~$ nslookup mozart-redis
+   Server:         10.96.0.10
+   Address:        10.96.0.10#53
+   
+   Name:   mozart-redis.default.svc.cluster.local
+   Address: 10.107.221.228
+
+   ops@test-verdi-79cc7bb54d-p7wgm:~$ sudo yum install -y redis
+   ops@test-verdi-79cc7bb54d-p7wgm:~$ redis-cli -h mozart-redis
+   mozart-redis:6379> CONFIG GET dir
+   1) "dir"
+   2) "/data/redis"
+   mozart-redis:6379> set test_key 12345
+   OK
+   mozart-redis:6379> quit
+   ops@test-verdi-79cc7bb54d-p7wgm:~$ exit
+   exit
+   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-p7wgm -c test-verdi -i -t' command when the pod is running
+
+   kubectl delete deploy test-verdi
+   deployment.extensions "test-verdi" deleted
    ```
 
 ## Elasticsearch

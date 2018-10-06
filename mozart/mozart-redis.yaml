@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mozart-redis
+  labels:
+    run: mozart-redis
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+  selector:
+    run: mozart-redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mozart-redis
+spec:
+  selector:
+    matchLabels:
+      run: mozart-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: mozart-redis
+    spec:
+      containers:
+      - name: mozart-redis
+        image: hysds/redis:latest
+        command: [ "redis-server" ]
+        args: [ "/redis-master/redis.conf" ]
+        env:
+        - name: MASTER
+          value: "true"
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            cpu: "0.1"
+        volumeMounts:
+        - mountPath: /data/redis
+          name: data
+        - mountPath: /redis-master
+          name: config
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: mozart-redis-config
+            items:
+            - key: redis-config
+              path: redis.conf
