@@ -893,3 +893,242 @@
      </body>
    </html>
    ```
+
+## Mozart
+1. Create ConfigMap for mozart:
+   ```
+   $ kubectl create configmap mozart-config --from-file=../celeryconfig.py \
+     --from-file=event_status.template --from-file=indexer.conf \
+     --from-file=job_status.template --from-file=orchestrator_datasets.json \
+     --from-file=orchestrator_jobs.json --from-file=settings.cfg \
+     --from-file=supervisord.conf --from-file=task_status.template \
+     --from-file=worker_status.template
+   ```
+1. Examine the ConfigMap:
+   ```
+   $ kubectl get configmap mozart-config -o yaml
+   ```
+1. Create the `mozart` service:
+   ```
+   $ kubectl create -f mozart.yaml
+   service/mozart created
+   deployment.apps/mozart created
+   ```
+1. Verify pods are running:
+   ```
+   $ kubectl get pod -l run=mozart
+   NAME                      READY   STATUS    RESTARTS   AGE
+   mozart-59d74fd96f-f7rtm   1/1     Running   0          93s
+   ```
+   Describe pods:
+   ```
+   $ kubectl describe pod -l run=mozart
+   NAME                      READY   STATUS    RESTARTS   AGE
+   mozart-59d74fd96f-f7rtm   1/1     Running   0          93s
+   gmanipon@js-157-99:~/dev/hysds-k8s/mozart$ kc describe pod -l run=mozart
+   Name:               mozart-59d74fd96f-f7rtm
+   Namespace:          default
+   Priority:           0
+   PriorityClassName:  <none>
+   Node:               js-170-15.jetstream-cloud.org/172.28.26.10
+   Start Time:         Sun, 07 Oct 2018 02:01:09 -0400
+   Labels:             pod-template-hash=59d74fd96f
+                       run=mozart
+   Annotations:        <none>
+   Status:             Running
+   IP:                 10.42.0.2
+   Controlled By:      ReplicaSet/mozart-59d74fd96f
+   Containers:
+     mozart:
+       Container ID:   docker://2c65904e811eb5e96fe704051c187bd169d9002f233c87412c3a8b86ead08d8f
+       Image:          hysds/mozart:latest
+       Image ID:       docker-pullable://hysds/mozart@sha256:4ef18bf46d2832e8f3104be62f4004b51cc9ee26bc9a97367a626d316d3dde5c
+       Ports:          80/TCP, 443/TCP, 5555/TCP, 8888/TCP, 8898/TCP, 9001/TCP
+       Host Ports:     0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
+       State:          Running
+         Started:      Sun, 07 Oct 2018 02:01:13 -0400
+       Ready:          True
+       Restart Count:  0
+       Limits:
+         cpu:  100m
+       Requests:
+         cpu:        100m
+       Environment:  <none>
+       Mounts:
+         /home/ops/mozart/etc/celeryconfig.py from config (rw)
+         /home/ops/mozart/etc/event_status.template from config (rw)
+         /home/ops/mozart/etc/indexer.conf from config (rw)
+         /home/ops/mozart/etc/job_status.template from config (rw)
+         /home/ops/mozart/etc/orchestrator_datasets.json from config (rw)
+         /home/ops/mozart/etc/orchestrator_jobs.json from config (rw)
+         /home/ops/mozart/etc/settings.cfg from config (rw)
+         /home/ops/mozart/etc/supervisord.conf from config (rw)
+         /home/ops/mozart/etc/task_status.template from config (rw)
+         /home/ops/mozart/etc/worker_status.template from config (rw)
+         /home/ops/mozart/log from log (rw)
+         /var/run/secrets/kubernetes.io/serviceaccount from default-token-jc59x (ro)
+   Conditions:
+     Type              Status
+     Initialized       True 
+     Ready             True 
+     ContainersReady   True 
+     PodScheduled      True 
+   Volumes:
+     config:
+       Type:      ConfigMap (a volume populated by a ConfigMap)
+       Name:      mozart-config
+       Optional:  false
+     log:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+     default-token-jc59x:
+       Type:        Secret (a volume populated by a Secret)
+       SecretName:  default-token-jc59x
+       Optional:    false
+   QoS Class:       Burstable
+   Node-Selectors:  <none>
+   Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                    node.kubernetes.io/unreachable:NoExecute for 300s
+   Events:
+     Type    Reason     Age   From                                    Message
+     ----    ------     ----  ----                                    -------
+     Normal  Scheduled  115s  default-scheduler                       Successfully assigned default/mozart-59d74fd96f-f7rtm to js-170-15.jetstream-cloud.org
+     Normal  Pulling    113s  kubelet, js-170-15.jetstream-cloud.org  pulling image "hysds/mozart:latest"
+     Normal  Pulled     112s  kubelet, js-170-15.jetstream-cloud.org  Successfully pulled image "hysds/mozart:latest"
+     Normal  Created    111s  kubelet, js-170-15.jetstream-cloud.org  Created container
+     Normal  Started    111s  kubelet, js-170-15.jetstream-cloud.org  Started container
+   ```
+1. Verify deployment is running:
+   ```
+   $ kubectl get deploy mozart
+   NAME     DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+   mozart   1         1         1            1           3m10s
+   ```
+   Describe deployment:
+   ```
+   $ kubectl describe deploy mozart
+   Name:                   mozart
+   Namespace:              default
+   CreationTimestamp:      Sun, 07 Oct 2018 02:01:09 -0400
+   Labels:                 <none>
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               run=mozart
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  run=mozart
+     Containers:
+      mozart:
+       Image:       hysds/mozart:latest
+       Ports:       80/TCP, 443/TCP, 5555/TCP, 8888/TCP, 8898/TCP, 9001/TCP
+       Host Ports:  0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
+       Limits:
+         cpu:        100m
+       Environment:  <none>
+       Mounts:
+         /home/ops/mozart/etc/celeryconfig.py from config (rw)
+         /home/ops/mozart/etc/event_status.template from config (rw)
+         /home/ops/mozart/etc/indexer.conf from config (rw)
+         /home/ops/mozart/etc/job_status.template from config (rw)
+         /home/ops/mozart/etc/orchestrator_datasets.json from config (rw)
+         /home/ops/mozart/etc/orchestrator_jobs.json from config (rw)
+         /home/ops/mozart/etc/settings.cfg from config (rw)
+         /home/ops/mozart/etc/supervisord.conf from config (rw)
+         /home/ops/mozart/etc/task_status.template from config (rw)
+         /home/ops/mozart/etc/worker_status.template from config (rw)
+         /home/ops/mozart/log from log (rw)
+     Volumes:
+      config:
+       Type:      ConfigMap (a volume populated by a ConfigMap)
+       Name:      mozart-config
+       Optional:  false
+      log:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  <none>
+   NewReplicaSet:   mozart-59d74fd96f (1/1 replicas created)
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  3m39s  deployment-controller  Scaled up replica set mozart-59d74fd96f to 1
+   ```
+1. Verify service is running:
+   ```
+   $ kubectl get service mozart
+   NAME     TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                                                  AGE
+   mozart   NodePort   10.103.117.0   <none>        80:31104/TCP,443:32374/TCP,5555:31117/TCP,8888:30011/TCP,8898:30350/TCP,9001:31418/TCP   4m32s
+   ```
+   Describe service:
+   ```
+   $ kubectl describe service mozart
+   Name:                     mozart
+   Namespace:                default
+   Labels:                   run=mozart
+   Annotations:              <none>
+   Selector:                 run=mozart
+   Type:                     NodePort
+   IP:                       10.103.117.0
+   Port:                     http  80/TCP
+   TargetPort:               80/TCP
+   NodePort:                 http  31104/TCP
+   Endpoints:                10.42.0.2:80
+   Port:                     https  443/TCP
+   TargetPort:               443/TCP
+   NodePort:                 https  32374/TCP
+   Endpoints:                10.42.0.2:443
+   Port:                     flower  5555/TCP
+   TargetPort:               5555/TCP
+   NodePort:                 flower  31117/TCP
+   Endpoints:                10.42.0.2:5555
+   Port:                     mozart  8888/TCP
+   TargetPort:               8888/TCP
+   NodePort:                 mozart  30011/TCP
+   Endpoints:                10.42.0.2:8888
+   Port:                     figaro  8898/TCP
+   TargetPort:               8898/TCP
+   NodePort:                 figaro  30350/TCP
+   Endpoints:                10.42.0.2:8898
+   Port:                     supervisord  9001/TCP
+   TargetPort:               9001/TCP
+   NodePort:                 supervisord  31418/TCP
+   Endpoints:                10.42.0.2:9001
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
+   ```
+1. Use kubectl exec to enter the pod and run curl to verify that the configuration was correctly applied:
+   ```
+   $ kubectl exec -ti $(kubectl get pod -l run=mozart | grep -v NAME | awk '{print $1}') bash
+   ops@mozart-59d74fd96f-f7rtm:~$ curl -k https://localhost/mozart/api/v0.1/swagger.json
+   ```
+1. Verify that service is reachable from any pod in the cluster:
+   ```
+   $ kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
+   kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+   If you don't see a command prompt, try pressing enter.
+   ops@test-verdi-79cc7bb54d-6d6j7:~$ nslookup mozart
+   Server:         10.96.0.10
+   Address:        10.96.0.10#53
+   
+   Name:   mozart.default.svc.cluster.local
+   Address: 10.102.133.142
+   
+   ops@test-verdi-79cc7bb54d-6d6j7:~$ curl -k https://mozart/mozart/api/v0.1/swagger.json 
+   exit
+   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-wnbf2 -c test-verdi -i -t' command when the pod is running
+
+   $ kubectl delete deploy test-verdi
+   deployment.extensions "test-verdi" deleted
+   ```
+1. Verify that service is reachable from an instance outside of the cluster:
+   ```
+   $ MOZART_IP=$(kubectl describe pod -l run=mozart | grep '^Node:' | cut -d/ -f2)
+   $ MOZART_PORT=$(kubectl describe service mozart | grep 'NodePort:' | head -2 | tail -1 | awk '{print $3}' | cut -d/ -f1)
+   $ curl -k https://${MOZART_IP}:${MOZART_PORT}/mozart/api/v0.1/swagger.json
