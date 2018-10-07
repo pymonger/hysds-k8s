@@ -3,11 +3,11 @@
 ## Redis
 1. Create ConfigMap for redis:
    ```
-   kubectl create configmap mozart-redis-config --from-file=redis-config
+   $ kubectl create configmap mozart-redis-config --from-file=redis-config
    ```
 1. Examine the ConfigMap:
    ```
-   kubectl get configmap mozart-redis-config -o yaml
+   $ kubectl get configmap mozart-redis-config -o yaml
    apiVersion: v1
    data:
      redis-config: |
@@ -77,19 +77,19 @@
    ```
 1. Create the `mozart-redis` service:
    ```
-   kubectl create -f mozart-redis.yaml
+   $ kubectl create -f mozart-redis.yaml
    service/mozart-redis created
    deployment.apps/mozart-redis created
    ```
 1. Verify pods are running:
    ```
-   kubectl get pod -l run=mozart-redis
+   $ kubectl get pod -l run=mozart-redis
    NAME                            READY   STATUS    RESTARTS   AGE
    mozart-redis-5b785957b6-8bnbb   1/1     Running   0          2m16s
    ```
    Describe pods:
    ```
-   kubectl describe pod -l run=mozart-redis
+   $ kubectl describe pod -l run=mozart-redis
    Name:               mozart-redis-5b785957b6-8bnbb
    Namespace:          default
    Priority:           0
@@ -160,13 +160,13 @@
    ```
 1. Verify deployment is running:
    ```
-   kubectl get deploy mozart-redis
+   $ kubectl get deploy mozart-redis
    NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
    mozart-redis   1         1         1            1           4m43s
    ```
    Describe deployment:
    ```
-   kubectl describe deploy mozart-redis
+   $ kubectl describe deploy mozart-redis
    Name:                   mozart-redis
    Namespace:              default
    CreationTimestamp:      Sat, 06 Oct 2018 18:23:03 -0400
@@ -217,13 +217,13 @@
    ```
 1. Verify service is running:
    ```
-   kubectl get service mozart-redis
+   $ kubectl get service mozart-redis
    NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
    mozart-redis   ClusterIP   10.108.202.234   <none>        6379/TCP   6m20s
    ```
    Describe service:
    ```
-   kubectl describe service mozart-redis
+   $ kubectl describe service mozart-redis
    Name:              mozart-redis
    Namespace:         default
    Labels:            run=mozart-redis
@@ -239,7 +239,7 @@
    ```
 1. Use kubectl exec to enter the pod and run the redis-cli tool to verify that the configuration was correctly applied:
    ```
-   kubectl exec -ti $(kubectl get pod -l run=mozart-redis | grep -v NAME | awk '{print $1}') redis-cli
+   $ kubectl exec -ti $(kubectl get pod -l run=mozart-redis | grep -v NAME | awk '{print $1}') redis-cli
    127.0.0.1:6379> CONFIG GET dir
    1) "dir"
    2) "/data/redis"
@@ -247,7 +247,7 @@
    ```
 1. Verify that service is reachable from any pod in the cluster:
    ```
-   kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
+   $ kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
    kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
    If you don't see a command prompt, try pressing enter.
    ops@test-verdi-79cc7bb54d-p7wgm:~$ nslookup mozart-redis
@@ -269,37 +269,41 @@
    exit
    Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-p7wgm -c test-verdi -i -t' command when the pod is running
 
-   kubectl delete deploy test-verdi
+   $ kubectl delete deploy test-verdi
    deployment.extensions "test-verdi" deleted
    ```
 
 ## Elasticsearch
-1. Create the pod:
+1. Create the `mozart-es` service:
    ```
-   kubectl create -f es-pod.yaml
+   $ kubectl create -f mozart-es.yaml
+   service/mozart-es created
+   deployment.apps/mozart-es created
    ```
-1. Verify pod is running:
+1. Verify pods are running:
    ```
-   kubectl get pod mozart-es
-   NAME        READY   STATUS    RESTARTS   AGE
-   mozart-es   1/1     Running   0          2m50s
+   $ kubectl get pod -l run=mozart-es
+   NAME                         READY   STATUS    RESTARTS   AGE
+   mozart-es-6c58c69548-998zw   1/1     Running   0          2m23s
    ```
    Describe pods:
    ```
-   kubectl describe pod mozart-es
-   Name:               mozart-es
+   $ kubectl describe pod -l run=mozart-es
+   Name:               mozart-es-6c58c69548-998zw
    Namespace:          default
    Priority:           0
    PriorityClassName:  <none>
    Node:               js-156-120.jetstream-cloud.org/172.28.26.9
-   Start Time:         Sat, 06 Oct 2018 16:08:46 -0400
-   Labels:             <none>
+   Start Time:         Sat, 06 Oct 2018 19:41:24 -0400
+   Labels:             pod-template-hash=6c58c69548
+                       run=mozart-es
    Annotations:        <none>
    Status:             Running
    IP:                 10.44.0.1
+   Controlled By:      ReplicaSet/mozart-es-6c58c69548
    Containers:
      mozart-es:
-       Container ID:  docker://7a5dd217d8acc22002877a4e9a5ee59495dadd7bcf5a68edf87a86a06fd3bba0
+       Container ID:  docker://1ce4fdafefaf5fffd7bbff7bbce1be2c621f5806843b7ea0d8cbaecc1b083a08
        Image:         hysds/elasticsearch:1.7
        Image ID:      docker-pullable://hysds/elasticsearch@sha256:5173fd6d7356e2f8f619860d41d3d9b8c0e66de40dfab38dbc95d7f919072898
        Ports:         9200/TCP, 9300/TCP
@@ -307,12 +311,12 @@
        Command:
          elasticsearch
        Args:
-         -Des.node.name='mozart-elasticsearch'
+         -Des.node.name='mozart-es'
          -Des.cluster.name='resource_cluster'
          -Des.bootstrap.mlockall=true
          -Des.network.host=0
        State:          Running
-         Started:      Sat, 06 Oct 2018 16:09:09 -0400
+         Started:      Sat, 06 Oct 2018 19:41:27 -0400
        Ready:          True
        Restart Count:  0
        Limits:
@@ -348,21 +352,108 @@
    Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
                     node.kubernetes.io/unreachable:NoExecute for 300s
    Events:
-     Type    Reason     Age    From                                     Message
-     ----    ------     ----   ----                                     -------
-     Normal  Scheduled  3m25s  default-scheduler                        Successfully assigned default/mozart-es to js-156-120.jetstream-cloud.org
-     Normal  Pulling    3m23s  kubelet, js-156-120.jetstream-cloud.org  pulling image "hysds/elasticsearch:1.7"
-     Normal  Pulled     3m3s   kubelet, js-156-120.jetstream-cloud.org  Successfully pulled image "hysds/elasticsearch:1.7"
-     Normal  Created    3m2s   kubelet, js-156-120.jetstream-cloud.org  Created container
-     Normal  Started    3m2s   kubelet, js-156-120.jetstream-cloud.org  Started container
+     Type    Reason     Age   From                                     Message
+     ----    ------     ----  ----                                     -------
+     Normal  Scheduled  3m6s  default-scheduler                        Successfully assigned default/mozart-es-6c58c69548-998zw to js-156-120.jetstream-cloud.org
+     Normal  Pulled     3m4s  kubelet, js-156-120.jetstream-cloud.org  Container image "hysds/elasticsearch:1.7" already present on machine
+     Normal  Created    3m4s  kubelet, js-156-120.jetstream-cloud.org  Created container
+     Normal  Started    3m3s  kubelet, js-156-120.jetstream-cloud.org  Started container
+   ```
+1. Verify deployment is running:
+   ```
+   $ kubectl get deploy mozart-es
+   NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+   mozart-es   1         1         1            1           4m17s
+   ```
+   Describe deployment:
+   ```
+   $ kubectl describe deploy mozart-es
+   Name:                   mozart-es
+   Namespace:              default
+   CreationTimestamp:      Sat, 06 Oct 2018 19:41:24 -0400
+   Labels:                 <none>
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               run=mozart-es
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  run=mozart-es
+     Containers:
+      mozart-es:
+       Image:       hysds/elasticsearch:1.7
+       Ports:       9200/TCP, 9300/TCP
+       Host Ports:  0/TCP, 0/TCP
+       Command:
+         elasticsearch
+       Args:
+         -Des.node.name='mozart-es'
+         -Des.cluster.name='resource_cluster'
+         -Des.bootstrap.mlockall=true
+         -Des.network.host=0
+       Limits:
+         cpu:  100m
+       Environment:
+         ES_HEAP_SIZE:       100m
+         MAX_LOCKED_MEMORY:  unlimited
+       Mounts:
+         /usr/share/elasticsearch/config from config (rw)
+         /usr/share/elasticsearch/data from data (rw)
+     Volumes:
+      data:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+      config:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  mozart-es-6c58c69548 (1/1 replicas created)
+   NewReplicaSet:   <none>
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  4m43s  deployment-controller  Scaled up replica set mozart-es-6c58c69548 to 1
+   ```
+1. Verify service is running:
+   ```
+   $ kubectl get service mozart-es
+   NAME        TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+   mozart-es   NodePort   10.109.169.61   <none>        9200:31919/TCP,9300:31010/TCP   5m32s
+   ```
+   Describe service:
+   ```
+   $ kubectl describe service mozart-es
+   Name:                     mozart-es
+   Namespace:                default
+   Labels:                   run=mozart-es
+   Annotations:              <none>
+   Selector:                 run=mozart-es
+   Type:                     NodePort
+   IP:                       10.109.169.61
+   Port:                     http  9200/TCP
+   TargetPort:               9200/TCP
+   NodePort:                 http  31919/TCP
+   Endpoints:                10.44.0.1:9200
+   Port:                     tcp  9300/TCP
+   TargetPort:               9300/TCP
+   NodePort:                 tcp  31010/TCP
+   Endpoints:                10.44.0.1:9300
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
    ```
 1. Use kubectl exec to enter the pod and run curl to verify that the configuration was correctly applied:
    ```
-   kubectl exec -it mozart-es bash
-   root@mozart-es:/usr/share/elasticsearch# curl localhost:9200
+   $ kubectl exec -ti $(kubectl get pod -l run=mozart-es | grep -v NAME | awk '{print $1}') bash
+   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl localhost:9200
    {
      "status" : 200,
-     "name" : "mozart-elasticsearch",
+     "name" : "mozart-es",
      "cluster_name" : "resource_cluster",
      "version" : {
        "number" : "1.7.6",
@@ -373,19 +464,70 @@
      },
      "tagline" : "You Know, for Search"
    }
-   root@mozart-es:/usr/share/elasticsearch# curl -XPUT 'http://localhost:9200/twitter/tweet/1' -d '{
-       "user" : "kimchy",
-       "post_date" : "2009-11-15T14:12:12",
-       "message" : "trying out Elasticsearch"
-   }'
-   
+   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl -XPUT 'http://localhost:9200/twitter/tweet/1' -d '{
+           "user" : "kimchy",
+           "post_date" : "2009-11-15T14:12:12",
+           "message" : "trying out Elasticsearch"
+       }'
    {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"created":true}
-   root@mozart-es:/usr/share/elasticsearch# curl http://localhost:9200/twitter/tweet/1
+   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl http://localhost:9200/twitter/tweet/1
    {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
-       "user" : "kimchy",
-       "post_date" : "2009-11-15T14:12:12",
-       "message" : "trying out Elasticsearch"
+          "user" : "kimchy",
+          "post_date" : "2009-11-15T14:12:12",
+          "message" : "trying out Elasticsearch"
    }}
+   ```
+1. Verify that service is reachable from any pod in the cluster:
+   ```
+   $ kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
+   kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+   If you don't see a command prompt, try pressing enter.
+   ops@test-verdi-79cc7bb54d-zt7nj:~$ nslookup mozart-es
+   Server:         10.96.0.10
+   Address:        10.96.0.10#53
+   
+   Name:   mozart-es.default.svc.cluster.local
+   Address: 10.109.169.61
+   
+   ops@test-verdi-79cc7bb54d-zt7nj:~$ curl mozart-es:9200
+   {
+     "status" : 200,
+     "name" : "mozart-es",
+     "cluster_name" : "resource_cluster",
+     "version" : {
+       "number" : "1.7.6",
+       "build_hash" : "c730b59357f8ebc555286794dcd90b3411f517c9",
+       "build_timestamp" : "2016-11-18T15:21:16Z",
+       "build_snapshot" : false,
+       "lucene_version" : "4.10.4"
+     },
+     "tagline" : "You Know, for Search"
+   }
+   ops@test-verdi-79cc7bb54d-zt7nj:~$ exit
+   exit
+   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-zt7nj -c test-verdi -i -t' command when the pod is running
+
+   $ kubectl delete deploy test-verdi
+   deployment.extensions "test-verdi" deleted
+   ```
+1. Verify that service is reachable from an instance outside of the cluster:
+   ```
+   $ MOZART_ES_IP=$(kubectl describe pod -l run=mozart-es | grep '^Node:' | cut -d/ -f2)
+   $ MOZART_ES_PORT=$(kubectl describe service mozart-es | grep 'NodePort:' | head -1 | awk '{print $3}' | cut -d/ -f1)
+   $ curl ${MOZART_ES_IP}:${MOZART_ES_PORT}
+   {
+     "status" : 200,
+     "name" : "mozart-es",
+     "cluster_name" : "resource_cluster",
+     "version" : {
+       "number" : "1.7.6",
+       "build_hash" : "c730b59357f8ebc555286794dcd90b3411f517c9",
+       "build_timestamp" : "2016-11-18T15:21:16Z",
+       "build_snapshot" : false,
+       "lucene_version" : "4.10.4"
+     },
+     "tagline" : "You Know, for Search"
+   }
    ```
 
 ## RabbitMQ
