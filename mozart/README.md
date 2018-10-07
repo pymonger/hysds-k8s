@@ -274,36 +274,36 @@
    ```
 
 ## Elasticsearch
-1. Create the `mozart-es` service:
+1. Create the `mozart-elasticsearch` service:
    ```
-   $ kubectl create -f mozart-es.yaml
-   service/mozart-es created
-   deployment.apps/mozart-es created
+   $ kubectl create -f mozart-elasticsearch.yaml
+   service/mozart-elasticsearch created
+   deployment.apps/mozart-elasticsearch created
    ```
 1. Verify pods are running:
    ```
-   $ kubectl get pod -l run=mozart-es
-   NAME                         READY   STATUS    RESTARTS   AGE
-   mozart-es-6c58c69548-998zw   1/1     Running   0          2m23s
+   $ kubectl get pod -l run=mozart-elasticsearch
+   NAME                                    READY   STATUS    RESTARTS   AGE
+   mozart-elasticsearch-7f4f8fd8f9-zj4g6   1/1     Running   0          13s
    ```
    Describe pods:
    ```
-   $ kubectl describe pod -l run=mozart-es
-   Name:               mozart-es-6c58c69548-998zw
+   $ kubectl describe pod -l run=mozart-elasticsearch
+   Name:               mozart-elasticsearch-7f4f8fd8f9-zj4g6
    Namespace:          default
    Priority:           0
    PriorityClassName:  <none>
    Node:               js-156-120.jetstream-cloud.org/172.28.26.9
-   Start Time:         Sat, 06 Oct 2018 19:41:24 -0400
-   Labels:             pod-template-hash=6c58c69548
-                       run=mozart-es
+   Start Time:         Sat, 06 Oct 2018 22:31:28 -0400
+   Labels:             pod-template-hash=7f4f8fd8f9
+                       run=mozart-elasticsearch
    Annotations:        <none>
    Status:             Running
    IP:                 10.44.0.1
-   Controlled By:      ReplicaSet/mozart-es-6c58c69548
+   Controlled By:      ReplicaSet/mozart-elasticsearch-7f4f8fd8f9
    Containers:
-     mozart-es:
-       Container ID:  docker://1ce4fdafefaf5fffd7bbff7bbce1be2c621f5806843b7ea0d8cbaecc1b083a08
+     mozart-elasticsearch:
+       Container ID:  docker://e95548c627a33878514a2ff6a100ffe0ff489deef1edd9011e77d30c76cd00c1
        Image:         hysds/elasticsearch:1.7
        Image ID:      docker-pullable://hysds/elasticsearch@sha256:5173fd6d7356e2f8f619860d41d3d9b8c0e66de40dfab38dbc95d7f919072898
        Ports:         9200/TCP, 9300/TCP
@@ -311,12 +311,12 @@
        Command:
          elasticsearch
        Args:
-         -Des.node.name='mozart-es'
+         -Des.node.name='mozart-elasticsearch'
          -Des.cluster.name='resource_cluster'
          -Des.bootstrap.mlockall=true
          -Des.network.host=0
        State:          Running
-         Started:      Sat, 06 Oct 2018 19:41:27 -0400
+         Started:      Sat, 06 Oct 2018 22:31:31 -0400
        Ready:          True
        Restart Count:  0
        Limits:
@@ -354,41 +354,41 @@
    Events:
      Type    Reason     Age   From                                     Message
      ----    ------     ----  ----                                     -------
-     Normal  Scheduled  3m6s  default-scheduler                        Successfully assigned default/mozart-es-6c58c69548-998zw to js-156-120.jetstream-cloud.org
-     Normal  Pulled     3m4s  kubelet, js-156-120.jetstream-cloud.org  Container image "hysds/elasticsearch:1.7" already present on machine
-     Normal  Created    3m4s  kubelet, js-156-120.jetstream-cloud.org  Created container
-     Normal  Started    3m3s  kubelet, js-156-120.jetstream-cloud.org  Started container
+     Normal  Scheduled  35s   default-scheduler                        Successfully assigned default/mozart-elasticsearch-7f4f8fd8f9-zj4g6 to js-156-120.jetstream-cloud.org
+     Normal  Pulled     33s   kubelet, js-156-120.jetstream-cloud.org  Container image "hysds/elasticsearch:1.7" already present on machine
+     Normal  Created    32s   kubelet, js-156-120.jetstream-cloud.org  Created container
+     Normal  Started    32s   kubelet, js-156-120.jetstream-cloud.org  Started container
    ```
 1. Verify deployment is running:
    ```
-   $ kubectl get deploy mozart-es
-   NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-   mozart-es   1         1         1            1           4m17s
+   $ kubectl get deploy mozart-elasticsearch
+   NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+   mozart-elasticsearch   1         1         1            1           86s
    ```
    Describe deployment:
    ```
-   $ kubectl describe deploy mozart-es
-   Name:                   mozart-es
+   $ kubectl describe deploy mozart-elasticsearch
+   Name:                   mozart-elasticsearch
    Namespace:              default
-   CreationTimestamp:      Sat, 06 Oct 2018 19:41:24 -0400
+   CreationTimestamp:      Sat, 06 Oct 2018 22:31:27 -0400
    Labels:                 <none>
    Annotations:            deployment.kubernetes.io/revision: 1
-   Selector:               run=mozart-es
+   Selector:               run=mozart-elasticsearch
    Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
    StrategyType:           RollingUpdate
    MinReadySeconds:        0
    RollingUpdateStrategy:  25% max unavailable, 25% max surge
    Pod Template:
-     Labels:  run=mozart-es
+     Labels:  run=mozart-elasticsearch
      Containers:
-      mozart-es:
+      mozart-elasticsearch:
        Image:       hysds/elasticsearch:1.7
        Ports:       9200/TCP, 9300/TCP
        Host Ports:  0/TCP, 0/TCP
        Command:
          elasticsearch
        Args:
-         -Des.node.name='mozart-es'
+         -Des.node.name='mozart-elasticsearch'
          -Des.cluster.name='resource_cluster'
          -Des.bootstrap.mlockall=true
          -Des.network.host=0
@@ -412,36 +412,36 @@
      ----           ------  ------
      Available      True    MinimumReplicasAvailable
      Progressing    True    NewReplicaSetAvailable
-   OldReplicaSets:  mozart-es-6c58c69548 (1/1 replicas created)
+   OldReplicaSets:  mozart-elasticsearch-7f4f8fd8f9 (1/1 replicas created)
    NewReplicaSet:   <none>
    Events:
-     Type    Reason             Age    From                   Message
-     ----    ------             ----   ----                   -------
-     Normal  ScalingReplicaSet  4m43s  deployment-controller  Scaled up replica set mozart-es-6c58c69548 to 1
+     Type    Reason             Age   From                   Message
+     ----    ------             ----  ----                   -------
+     Normal  ScalingReplicaSet  109s  deployment-controller  Scaled up replica set mozart-elasticsearch-7f4f8fd8f9 to 1
    ```
 1. Verify service is running:
    ```
-   $ kubectl get service mozart-es
-   NAME        TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
-   mozart-es   NodePort   10.109.169.61   <none>        9200:31919/TCP,9300:31010/TCP   5m32s
+   $ kubectl get service mozart-elasticsearch
+   NAME                   TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+   mozart-elasticsearch   NodePort   10.100.88.102   <none>        9200:32440/TCP,9300:31251/TCP   2m32s
    ```
    Describe service:
    ```
-   $ kubectl describe service mozart-es
-   Name:                     mozart-es
+   $ kubectl describe service mozart-elasticsearch
+   Name:                     mozart-elasticsearch
    Namespace:                default
-   Labels:                   run=mozart-es
+   Labels:                   run=mozart-elasticsearch
    Annotations:              <none>
-   Selector:                 run=mozart-es
+   Selector:                 run=mozart-elasticsearch
    Type:                     NodePort
-   IP:                       10.109.169.61
+   IP:                       10.100.88.102
    Port:                     http  9200/TCP
    TargetPort:               9200/TCP
-   NodePort:                 http  31919/TCP
+   NodePort:                 http  32440/TCP
    Endpoints:                10.44.0.1:9200
    Port:                     tcp  9300/TCP
    TargetPort:               9300/TCP
-   NodePort:                 tcp  31010/TCP
+   NodePort:                 tcp  31251/TCP
    Endpoints:                10.44.0.1:9300
    Session Affinity:         None
    External Traffic Policy:  Cluster
@@ -449,11 +449,11 @@
    ```
 1. Use kubectl exec to enter the pod and run curl to verify that the configuration was correctly applied:
    ```
-   $ kubectl exec -ti $(kubectl get pod -l run=mozart-es | grep -v NAME | awk '{print $1}') bash
-   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl localhost:9200
+   $ kubectl exec -ti $(kubectl get pod -l run=mozart-elasticsearch | grep -v NAME | awk '{print $1}') bash
+   root@mozart-elasticsearch-7f4f8fd8f9-zj4g6:/usr/share/elasticsearch# curl localhost:9200
    {
      "status" : 200,
-     "name" : "mozart-es",
+     "name" : "mozart-elasticsearch",
      "cluster_name" : "resource_cluster",
      "version" : {
        "number" : "1.7.6",
@@ -464,53 +464,55 @@
      },
      "tagline" : "You Know, for Search"
    }
-   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl -XPUT 'http://localhost:9200/twitter/tweet/1' -d '{
-           "user" : "kimchy",
-           "post_date" : "2009-11-15T14:12:12",
-           "message" : "trying out Elasticsearch"
-       }'
-   {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"created":true}
-   root@mozart-es-6c58c69548-998zw:/usr/share/elasticsearch# curl http://localhost:9200/twitter/tweet/1
+   root@mozart-elasticsearch-7f4f8fd8f9-zj4g6:/usr/share/elasticsearch# curl -XPUT 'http://localhost:9200/twitter/tweet/1' -d '{
+       "user" : "kimchy",
+       "post_date" : "2009-11-15T14:12:12",
+       "message" : "trying out Elasticsearch"
+   }'
+   
+   {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"created":true}root@mozart-elasticsearch-7f4f8fd8f9-zj4g6:/usr/share/elasticsearch# 
+   root@mozart-elasticsearch-7f4f8fd8f9-zj4g6:/usr/share/elasticsearch# curl http://localhost:9200/twitter/tweet/1
    {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
-          "user" : "kimchy",
-          "post_date" : "2009-11-15T14:12:12",
-          "message" : "trying out Elasticsearch"
+       "user" : "kimchy",
+       "post_date" : "2009-11-15T14:12:12",
+       "message" : "trying out Elasticsearch"
    }}
+   $ exit
    ```
 1. Verify that service is reachable from any pod in the cluster:
    ```
    $ kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
    kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
    If you don't see a command prompt, try pressing enter.
-   ops@test-verdi-79cc7bb54d-zt7nj:~$ nslookup mozart-es
+   ops@test-verdi-79cc7bb54d-wnbf2:~$ nslookup mozart-elasticsearch
    Server:         10.96.0.10
    Address:        10.96.0.10#53
    
-   Name:   mozart-es.default.svc.cluster.local
-   Address: 10.109.169.61
+   Name:   mozart-elasticsearch.default.svc.cluster.local
+   Address: 10.100.88.102
    
-   ops@test-verdi-79cc7bb54d-zt7nj:~$ curl mozart-es:9200/twitter/tweet/1
+   ops@test-verdi-79cc7bb54d-wnbf2:~$ curl mozart-elasticsearch:9200/twitter/tweet/1
    {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
               "user" : "kimchy",
               "post_date" : "2009-11-15T14:12:12",
               "message" : "trying out Elasticsearch"
    }}
-   ops@test-verdi-79cc7bb54d-zt7nj:~$ exit
+   ops@test-verdi-79cc7bb54d-wnbf2:~$ exit
    exit
-   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-zt7nj -c test-verdi -i -t' command when the pod is running
+   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-wnbf2 -c test-verdi -i -t' command when the pod is running
 
    $ kubectl delete deploy test-verdi
    deployment.extensions "test-verdi" deleted
    ```
 1. Verify that service is reachable from an instance outside of the cluster:
    ```
-   $ MOZART_ES_IP=$(kubectl describe pod -l run=mozart-es | grep '^Node:' | cut -d/ -f2)
-   $ MOZART_ES_PORT=$(kubectl describe service mozart-es | grep 'NodePort:' | head -1 | awk '{print $3}' | cut -d/ -f1)
-   $ curl ${MOZART_ES_IP}:${MOZART_ES_PORT}/twitter/tweet/1
+   $ MOZART_ELASTICSEARCH_IP=$(kubectl describe pod -l run=mozart-elasticsearch | grep '^Node:' | cut -d/ -f2)
+   $ MOZART_ELASTICSEARCH_PORT=$(kubectl describe service mozart-elasticsearch | grep 'NodePort:' | head -1 | awk '{print $3}' | cut -d/ -f1)
+   $ curl ${MOZART_ELASTICSEARCH_IP}:${MOZART_ELASTICSEARCH_PORT}/twitter/tweet/1
    {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
-              "user" : "kimchy",
-              "post_date" : "2009-11-15T14:12:12",
-              "message" : "trying out Elasticsearch"
+       "user" : "kimchy",
+       "post_date" : "2009-11-15T14:12:12",
+       "message" : "trying out Elasticsearch"
    }}
    ```
 

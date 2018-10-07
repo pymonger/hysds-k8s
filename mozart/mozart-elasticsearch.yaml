@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mozart-es
+  name: mozart-elasticsearch
   labels:
-    run: mozart-es
+    run: mozart-elasticsearch
 spec:
   type: NodePort
   ports:
@@ -14,27 +14,27 @@ spec:
     protocol: TCP
     name: tcp
   selector:
-    run: mozart-es
+    run: mozart-elasticsearch
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mozart-es
+  name: mozart-elasticsearch
 spec:
   selector:
     matchLabels:
-      run: mozart-es
+      run: mozart-elasticsearch
   replicas: 1
   template:
     metadata:
       labels:
-        run: mozart-es
+        run: mozart-elasticsearch
     spec:
       containers:
-      - name: mozart-es
+      - name: mozart-elasticsearch
         image: hysds/elasticsearch:1.7
         command: [ "elasticsearch" ]
-        args: [ "-Des.node.name='mozart-es'",
+        args: [ "-Des.node.name='mozart-elasticsearch'",
                 "-Des.cluster.name='resource_cluster'",
                 "-Des.bootstrap.mlockall=true",
                 "-Des.network.host=0" ]
