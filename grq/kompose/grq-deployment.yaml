@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.1.0 (36652f6)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: grq
+  name: grq
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: grq
+    spec:
+      containers:
+      - image: hysds/grq
+        name: grq
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        - containerPort: 8878
+        - containerPort: 8879
+        - containerPort: 9001
+        resources: {}
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: grq-claim0
+          readOnly: true
+        - mountPath: /var/run/docker.sock
+          name: grq-claim1
+        - mountPath: /home/ops/sciflo/etc
+          name: grq-claim2
+        - mountPath: /home/ops/sciflo/log
+          name: grq-claim3
+        - mountPath: /home/ops/.aws
+          name: grq-claim4
+        - mountPath: /home/ops/.boto
+          name: grq-claim5
+        - mountPath: /home/ops/.s3cfg
+          name: grq-claim6
+        - mountPath: /home/ops/.netrc
+          name: grq-claim7
+      restartPolicy: Always
+      volumes:
+      - name: grq-claim0
+        persistentVolumeClaim:
+          claimName: grq-claim0
+          readOnly: true
+      - name: grq-claim1
+        persistentVolumeClaim:
+          claimName: grq-claim1
+      - name: grq-claim2
+        persistentVolumeClaim:
+          claimName: grq-claim2
+      - name: grq-claim3
+        persistentVolumeClaim:
+          claimName: grq-claim3
+      - name: grq-claim4
+        persistentVolumeClaim:
+          claimName: grq-claim4
+      - name: grq-claim5
+        persistentVolumeClaim:
+          claimName: grq-claim5
+      - name: grq-claim6
+        persistentVolumeClaim:
+          claimName: grq-claim6
+      - name: grq-claim7
+        persistentVolumeClaim:
+          claimName: grq-claim7
+status: {}

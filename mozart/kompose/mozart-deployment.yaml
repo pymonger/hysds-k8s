@@ -1,0 +1,82 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.1.0 (36652f6)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mozart
+  name: mozart
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mozart
+    spec:
+      containers:
+      - image: hysds/mozart
+        name: mozart
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        - containerPort: 5555
+        - containerPort: 8888
+        - containerPort: 8898
+        - containerPort: 9001
+        resources: {}
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: mozart-claim0
+          readOnly: true
+        - mountPath: /var/run/docker.sock
+          name: mozart-claim1
+        - mountPath: /home/ops/mozart/etc
+          name: mozart-claim2
+        - mountPath: /home/ops/mozart/log
+          name: mozart-claim3
+        - mountPath: /home/ops/.aws
+          name: mozart-claim4
+        - mountPath: /home/ops/.boto
+          name: mozart-claim5
+        - mountPath: /home/ops/.s3cfg
+          name: mozart-claim6
+        - mountPath: /home/ops/.netrc
+          name: mozart-claim7
+        - mountPath: /data/redis
+          name: redis-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mozart-claim0
+        persistentVolumeClaim:
+          claimName: mozart-claim0
+          readOnly: true
+      - name: mozart-claim1
+        persistentVolumeClaim:
+          claimName: mozart-claim1
+      - name: mozart-claim2
+        persistentVolumeClaim:
+          claimName: mozart-claim2
+      - name: mozart-claim3
+        persistentVolumeClaim:
+          claimName: mozart-claim3
+      - name: mozart-claim4
+        persistentVolumeClaim:
+          claimName: mozart-claim4
+      - name: mozart-claim5
+        persistentVolumeClaim:
+          claimName: mozart-claim5
+      - name: mozart-claim6
+        persistentVolumeClaim:
+          claimName: mozart-claim6
+      - name: mozart-claim7
+        persistentVolumeClaim:
+          claimName: mozart-claim7
+      - name: redis-claim0
+        persistentVolumeClaim:
+          claimName: redis-claim0
+status: {}

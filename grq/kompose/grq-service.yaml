@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.1.0 (36652f6)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: grq
+  name: grq
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  - name: "443"
+    port: 443
+    targetPort: 443
+  - name: "8878"
+    port: 8878
+    targetPort: 8878
+  - name: "8879"
+    port: 8879
+    targetPort: 8879
+  - name: "9001"
+    port: 9001
+    targetPort: 9001
+  selector:
+    io.kompose.service: grq
+status:
+  loadBalancer: {}
