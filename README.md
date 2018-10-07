@@ -5,6 +5,7 @@
 ### Create/start
 ```
 ./create_mozart.sh
+./get_mozart_urls.sh
 ```
 
 ### Delete/stop
