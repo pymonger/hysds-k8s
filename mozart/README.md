@@ -489,20 +489,12 @@
    Name:   mozart-es.default.svc.cluster.local
    Address: 10.109.169.61
    
-   ops@test-verdi-79cc7bb54d-zt7nj:~$ curl mozart-es:9200
-   {
-     "status" : 200,
-     "name" : "mozart-es",
-     "cluster_name" : "resource_cluster",
-     "version" : {
-       "number" : "1.7.6",
-       "build_hash" : "c730b59357f8ebc555286794dcd90b3411f517c9",
-       "build_timestamp" : "2016-11-18T15:21:16Z",
-       "build_snapshot" : false,
-       "lucene_version" : "4.10.4"
-     },
-     "tagline" : "You Know, for Search"
-   }
+   ops@test-verdi-79cc7bb54d-zt7nj:~$ curl mozart-es:9200/twitter/tweet/1
+   {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
+              "user" : "kimchy",
+              "post_date" : "2009-11-15T14:12:12",
+              "message" : "trying out Elasticsearch"
+   }}
    ops@test-verdi-79cc7bb54d-zt7nj:~$ exit
    exit
    Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-zt7nj -c test-verdi -i -t' command when the pod is running
@@ -514,20 +506,12 @@
    ```
    $ MOZART_ES_IP=$(kubectl describe pod -l run=mozart-es | grep '^Node:' | cut -d/ -f2)
    $ MOZART_ES_PORT=$(kubectl describe service mozart-es | grep 'NodePort:' | head -1 | awk '{print $3}' | cut -d/ -f1)
-   $ curl ${MOZART_ES_IP}:${MOZART_ES_PORT}
-   {
-     "status" : 200,
-     "name" : "mozart-es",
-     "cluster_name" : "resource_cluster",
-     "version" : {
-       "number" : "1.7.6",
-       "build_hash" : "c730b59357f8ebc555286794dcd90b3411f517c9",
-       "build_timestamp" : "2016-11-18T15:21:16Z",
-       "build_snapshot" : false,
-       "lucene_version" : "4.10.4"
-     },
-     "tagline" : "You Know, for Search"
-   }
+   $ curl ${MOZART_ES_IP}:${MOZART_ES_PORT}/twitter/tweet/1
+   {"_index":"twitter","_type":"tweet","_id":"1","_version":1,"found":true,"_source":{
+              "user" : "kimchy",
+              "post_date" : "2009-11-15T14:12:12",
+              "message" : "trying out Elasticsearch"
+   }}
    ```
 
 ## RabbitMQ
@@ -579,38 +563,42 @@
      selfLink: /api/v1/namespaces/default/configmaps/mozart-rabbitmq-config
      uid: b807fa29-c9ae-11e8-af6e-fa163e051185
    ```
-1. Create the pod:
+1. Create the `mozart-rabbitmq` service:
    ```
-   kubectl create -f rabbitmq-pod.yaml
+   $ kubectl create -f mozart-rabbitmq.yaml
+   service/mozart-rabbitmq created
+   deployment.apps/mozart-rabbitmq created
    ```
-1. Verify pod is running:
+1. Verify pods are running:
    ```
-   kubectl get pod mozart-rabbitmq
-   NAME              READY   STATUS    RESTARTS   AGE
-   mozart-rabbitmq   1/1     Running   0          48s
+   $ kubectl get pod -l run=mozart-rabbitmq
+   NAME                              READY   STATUS    RESTARTS   AGE
+   mozart-rabbitmq-c5fb88f6c-2hf9g   1/1     Running   0          35s
    ```
    Describe pods:
    ```
-   kubectl describe pod mozart-rabbitmq
-   Name:               mozart-rabbitmq
+   $ kubectl describe pod -l run=mozart-rabbitmq
+   Name:               mozart-rabbitmq-c5fb88f6c-2hf9g
    Namespace:          default
    Priority:           0
    PriorityClassName:  <none>
-   Node:               js-156-76.jetstream-cloud.org/172.28.26.11
-   Start Time:         Sat, 06 Oct 2018 17:47:47 -0400
-   Labels:             <none>
+   Node:               js-156-120.jetstream-cloud.org/172.28.26.9
+   Start Time:         Sat, 06 Oct 2018 21:25:39 -0400
+   Labels:             pod-template-hash=c5fb88f6c
+                       run=mozart-rabbitmq
    Annotations:        <none>
    Status:             Running
-   IP:                 10.36.0.1
+   IP:                 10.44.0.2
+   Controlled By:      ReplicaSet/mozart-rabbitmq-c5fb88f6c
    Containers:
      mozart-rabbitmq:
-       Container ID:   docker://96dbb358956902a962d646dff87ecb513ee01f555d3a3f9dc3c2785daafdfdeb
+       Container ID:   docker://84b28152334061d27d1d0207da69b51889b158b774a5d5df7a3901a33d029120
        Image:          hysds/rabbitmq:latest
        Image ID:       docker-pullable://hysds/rabbitmq@sha256:8792a5cfca8ad7f6131145eb6f2cff1bd93be78fce580691d34d091a27f72a4a
        Ports:          5672/TCP, 15672/TCP
        Host Ports:     0/TCP, 0/TCP
        State:          Running
-         Started:      Sat, 06 Oct 2018 17:48:03 -0400
+         Started:      Sat, 06 Oct 2018 21:25:42 -0400
        Ready:          True
        Restart Count:  0
        Limits:
@@ -646,19 +634,100 @@
    Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
                     node.kubernetes.io/unreachable:NoExecute for 300s
    Events:
-     Type    Reason     Age    From                                    Message
-     ----    ------     ----   ----                                    -------
-     Normal  Scheduled  2m21s  default-scheduler                       Successfully assigned default/mozart-rabbitmq to js-156-76.jetstream-cloud.org
-     Normal  Pulling    2m19s  kubelet, js-156-76.jetstream-cloud.org  pulling image "hysds/rabbitmq:latest"
-     Normal  Pulled     2m6s   kubelet, js-156-76.jetstream-cloud.org  Successfully pulled image "hysds/rabbitmq:latest"
-     Normal  Created    2m6s   kubelet, js-156-76.jetstream-cloud.org  Created container
-     Normal  Started    2m5s   kubelet, js-156-76.jetstream-cloud.org  Started container
+     Type    Reason     Age   From                                     Message
+     ----    ------     ----  ----                                     -------
+     Normal  Scheduled  61s   default-scheduler                        Successfully assigned default/mozart-rabbitmq-c5fb88f6c-2hf9g to js-156-120.jetstream-cloud.org
+     Normal  Pulling    59s   kubelet, js-156-120.jetstream-cloud.org  pulling image "hysds/rabbitmq:latest"
+     Normal  Pulled     58s   kubelet, js-156-120.jetstream-cloud.org  Successfully pulled image "hysds/rabbitmq:latest"
+     Normal  Created    57s   kubelet, js-156-120.jetstream-cloud.org  Created container
+     Normal  Started    57s   kubelet, js-156-120.jetstream-cloud.org  Started container
+   ```
+1. Verify deployment is running:
+   ```
+   $ kubectl get deploy mozart-rabbitmq
+   NAME              DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+   mozart-rabbitmq   1         1         1            1           113s
+   ```
+   Describe deployment:
+   ```
+   $ kubectl describe deploy mozart-rabbitmq
+   Name:                   mozart-rabbitmq
+   Namespace:              default
+   CreationTimestamp:      Sat, 06 Oct 2018 21:25:38 -0400
+   Labels:                 <none>
+   Annotations:            deployment.kubernetes.io/revision: 1
+   Selector:               run=mozart-rabbitmq
+   Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+   StrategyType:           RollingUpdate
+   MinReadySeconds:        0
+   RollingUpdateStrategy:  25% max unavailable, 25% max surge
+   Pod Template:
+     Labels:  run=mozart-rabbitmq
+     Containers:
+      mozart-rabbitmq:
+       Image:       hysds/rabbitmq:latest
+       Ports:       5672/TCP, 15672/TCP
+       Host Ports:  0/TCP, 0/TCP
+       Limits:
+         cpu:        100m
+       Environment:  <none>
+       Mounts:
+         /etc/default/rabbitmq-server from config (rw)
+         /etc/rabbitmq/rabbitmq.config from config (rw)
+         /var/lib/rabbitmq from data (rw)
+     Volumes:
+      data:
+       Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+       Medium:  
+      config:
+       Type:      ConfigMap (a volume populated by a ConfigMap)
+       Name:      mozart-rabbitmq-config
+       Optional:  false
+   Conditions:
+     Type           Status  Reason
+     ----           ------  ------
+     Available      True    MinimumReplicasAvailable
+     Progressing    True    NewReplicaSetAvailable
+   OldReplicaSets:  mozart-rabbitmq-c5fb88f6c (1/1 replicas created)
+   NewReplicaSet:   <none>
+   Events:
+     Type    Reason             Age    From                   Message
+     ----    ------             ----   ----                   -------
+     Normal  ScalingReplicaSet  2m32s  deployment-controller  Scaled up replica set mozart-rabbitmq-c5fb88f6c to 1
+   ```
+1. Verify service is running:
+   ```
+   $ kubectl get service mozart-rabbitmq
+   NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                          AGE
+   mozart-rabbitmq   NodePort   10.110.13.72   <none>        5672:30941/TCP,15672:30173/TCP   4m9s
+   ```
+   Describe service:
+   ```
+   $ kubectl describe service mozart-rabbitmq
+   Name:                     mozart-rabbitmq
+   Namespace:                default
+   Labels:                   run=mozart-rabbitmq
+   Annotations:              <none>
+   Selector:                 run=mozart-rabbitmq
+   Type:                     NodePort
+   IP:                       10.110.13.72
+   Port:                     amqp  5672/TCP
+   TargetPort:               5672/TCP
+   NodePort:                 amqp  30941/TCP
+   Endpoints:                10.44.0.2:5672
+   Port:                     http  15672/TCP
+   TargetPort:               15672/TCP
+   NodePort:                 http  30173/TCP
+   Endpoints:                10.44.0.2:15672
+   Session Affinity:         None
+   External Traffic Policy:  Cluster
+   Events:                   <none>
    ```
 1. Use kubectl exec to enter the pod and run rabbitmqctl to verify that the configuration was correctly applied:
    ```
-   kubectl exec -ti mozart-rabbitmq rabbitmqctl status
-   Status of node rabbit@mozart-rabbitmq ...
-   [{pid,168},
+   $ kubectl exec -ti $(kubectl get pod -l run=mozart-rabbitmq | grep -v NAME | awk '{print $1}') rabbitmqctl status
+   Status of node rabbit@mozart-rabbitmq-c5fb88f6c-2hf9g ...
+   [{pid,167},
     {running_applications,
         [{rabbitmq_management,"RabbitMQ Management Console","3.7.8"},
          {rabbitmq_web_dispatch,"RabbitMQ Web Dispatcher","3.7.8"},
@@ -700,28 +769,28 @@
          {connection_other,2840},
          {queue_procs,0},
          {queue_slave_procs,0},
-         {plugins,763392},
-         {other_proc,26525648},
-         {metrics,195072},
-         {mgmt_db,142424},
-         {mnesia,73720},
-         {other_ets,2224552},
-         {binary,161912},
-         {msg_index,29296},
+         {plugins,938776},
+         {other_proc,22079856},
+         {metrics,195088},
+         {mgmt_db,150768},
+         {mnesia,74488},
+         {other_ets,2270256},
+         {binary,82928},
+         {msg_index,30320},
          {code,28588778},
          {atom,1131721},
-         {other_system,10481213},
-         {allocated_unused,5111368},
-         {reserved_unallocated,524288},
+         {other_system,10478845},
+         {allocated_unused,8092456},
+         {reserved_unallocated,0},
          {strategy,rss},
-         {total,[{erlang,70320568},{rss,75956224},{allocated,75431936}]}]},
+         {total,[{erlang,66024664},{rss,66498560},{allocated,74117120}]}]},
     {alarms,[]},
     {listeners,[{clustering,25672,"::"},{amqp,5672,"::"},{http,15672,"::"}]},
     {vm_memory_calculation_strategy,rss},
     {vm_memory_high_watermark,100},
     {vm_memory_limit,3974053888},
     {disk_free_limit,50000000},
-    {disk_free,13799059456},
+    {disk_free,13771042816},
     {file_descriptors,
         [{total_limit,65436},
          {total_used,2},
@@ -729,6 +798,96 @@
          {sockets_used,0}]},
     {processes,[{limit,1048576},{used,371}]},
     {run_queue,0},
-    {uptime,107},
+    {uptime,522},
     {kernel,{net_ticktime,60}}]
+   ```
+1. Verify that service is reachable from any pod in the cluster:
+   ```
+   $ kubectl run -i -t test-verdi --image=hysds/verdi:latest bash
+   kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+   If you don't see a command prompt, try pressing enter.
+   ops@test-verdi-79cc7bb54d-8sll6:~$ nslookup mozart-rabbitmq
+   Server:         10.96.0.10
+   Address:        10.96.0.10#53
+   
+   Name:   mozart-rabbitmq.default.svc.cluster.local
+   Address: 10.110.13.72
+   
+   ops@test-verdi-79cc7bb54d-8sll6:~$ curl mozart-rabbitmq:15672
+   <!doctype html>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <html>
+     <head>
+       <title>RabbitMQ Management</title>
+       <script src="js/ejs-1.0.min.js" type="text/javascript"></script>
+       <script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
+       <script src="js/jquery.flot-0.8.1.min.js" type="text/javascript"></script>
+       <script src="js/jquery.flot-0.8.1.time.min.js" type="text/javascript"></script>
+       <script src="js/sammy-0.7.6.min.js" type="text/javascript"></script>
+       <script src="js/json2-2016.10.28.js" type="text/javascript"></script>
+       <script src="js/base64.js" type="text/javascript"></script>
+       <script src="js/global.js" type="text/javascript"></script>
+       <script src="js/main.js" type="text/javascript"></script>
+       <script src="js/prefs.js" type="text/javascript"></script>
+       <script src="js/formatters.js" type="text/javascript"></script>
+       <script src="js/charts.js" type="text/javascript"></script>
+   
+       <link href="css/main.css" rel="stylesheet" type="text/css"/>
+       <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+   
+   <!--[if lte IE 8]>
+       <script src="js/excanvas.min.js" type="text/javascript"></script>
+       <link href="css/evil.css" rel="stylesheet" type="text/css"/>
+   <![endif]-->
+     </head>
+     <body>
+       <div id="outer"></div>
+       <div id="debug"></div>
+       <div id="scratch"></div>
+     </body>
+   </html>
+   ops@test-verdi-79cc7bb54d-8sll6:~$ exit
+   exit
+   Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-8sll6 -c test-verdi -i -t' command when the pod is running
+
+   $ kubectl delete deploy test-verdi
+   deployment.extensions "test-verdi" deleted
+   ```
+1. Verify that service is reachable from an instance outside of the cluster:
+   ```
+   $ MOZART_RABBITMQ_IP=$(kubectl describe pod -l run=mozart-rabbitmq | grep '^Node:' | cut -d/ -f2)
+   $ MOZART_RABBITMQ_PORT=$(kubectl describe service mozart-rabbitmq | grep 'NodePort:' | tail -1 | awk '{print $3}' | cut -d/ -f1)
+   $ curl ${MOZART_RABBITMQ_IP}:${MOZART_RABBITMQ_PORT}
+   <!doctype html>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <html>
+     <head>
+       <title>RabbitMQ Management</title>
+       <script src="js/ejs-1.0.min.js" type="text/javascript"></script>
+       <script src="js/jquery-1.12.4.min.js" type="text/javascript"></script>
+       <script src="js/jquery.flot-0.8.1.min.js" type="text/javascript"></script>
+       <script src="js/jquery.flot-0.8.1.time.min.js" type="text/javascript"></script>
+       <script src="js/sammy-0.7.6.min.js" type="text/javascript"></script>
+       <script src="js/json2-2016.10.28.js" type="text/javascript"></script>
+       <script src="js/base64.js" type="text/javascript"></script>
+       <script src="js/global.js" type="text/javascript"></script>
+       <script src="js/main.js" type="text/javascript"></script>
+       <script src="js/prefs.js" type="text/javascript"></script>
+       <script src="js/formatters.js" type="text/javascript"></script>
+       <script src="js/charts.js" type="text/javascript"></script>
+   
+       <link href="css/main.css" rel="stylesheet" type="text/css"/>
+       <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+   
+   <!--[if lte IE 8]>
+       <script src="js/excanvas.min.js" type="text/javascript"></script>
+       <link href="css/evil.css" rel="stylesheet" type="text/css"/>
+   <![endif]-->
+     </head>
+     <body>
+       <div id="outer"></div>
+       <div id="debug"></div>
+       <div id="scratch"></div>
+     </body>
+   </html>
    ```
