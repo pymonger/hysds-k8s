@@ -215,7 +215,9 @@
    ops@test-verdi-79cc7bb54d-wnbf2:~$ exit
    exit
    Session ended, resume using 'kubectl attach test-verdi-79cc7bb54d-wnbf2 -c test-verdi -i -t' command when the pod is running
-
+   ```
+   Delete test pod:
+   ```
    $ kubectl delete deploy test-verdi
    deployment.extensions "test-verdi" deleted
    ```

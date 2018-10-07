@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grq-elasticsearch
+  labels:
+    component: grq
+    run: grq-elasticsearch
+spec:
+  type: NodePort
+  ports:
+  - port: 9200
+    protocol: TCP
+    name: http
+  - port: 9300
+    protocol: TCP
+    name: tcp
+  selector:
+    component: grq
+    run: grq-elasticsearch
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grq-elasticsearch
+  labels:
+    component: grq
+    run: grq-elasticsearch
+spec:
+  selector:
+    matchLabels:
+      component: grq
+      run: grq-elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: grq
+        run: grq-elasticsearch
+    spec:
+      containers:
+      - name: grq-elasticsearch
+        image: hysds/elasticsearch:latest
+        command: [ "elasticsearch" ]
+        args: [ "-Des.node.name='grq-elasticsearch'",
+                "-Des.cluster.name='resource_cluster'",
+                "-Des.bootstrap.mlockall=true",
+                "-Des.network.host=0" ]
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: tcp
+        resources:
+          limits:
+            cpu: "0.5"
+        env:
+        - name: ES_HEAP_SIZE
+          value: "100m"
+        - name: MAX_LOCKED_MEMORY
+          value: "unlimited"
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: data
+        - mountPath: /usr/share/elasticsearch/config
+          name: config
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          emptyDir: {}
