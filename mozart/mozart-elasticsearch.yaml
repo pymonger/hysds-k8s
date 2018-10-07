@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: mozart-elasticsearch
-        image: hysds/elasticsearch:1.7
+        image: hysds/elasticsearch:latest
         command: [ "elasticsearch" ]
         args: [ "-Des.node.name='mozart-elasticsearch'",
                 "-Des.cluster.name='resource_cluster'",
