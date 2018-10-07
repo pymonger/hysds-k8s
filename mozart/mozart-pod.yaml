@@ -26,6 +26,9 @@ spec:
     - mountPath: /home/ops/mozart/etc/celeryconfig.py
       name: global-config
       subPath: celeryconfig.py
+    - mountPath: /home/ops/mozart/etc/datasets.json
+      name: global-config
+      subPath: datasets.json
     - mountPath: /home/ops/mozart/etc/event_status.template
       name: config
       subPath: event_status.template

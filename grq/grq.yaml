@@ -67,6 +67,9 @@ spec:
         - mountPath: /home/ops/sciflo/etc/celeryconfig.py
           name: global-config
           subPath: celeryconfig.py
+        - mountPath: /home/ops/mozart/etc/datasets.json
+          name: global-config
+          subPath: datasets.json
         - mountPath: /home/ops/sciflo/etc/grq2_settings.cfg
           name: config
           subPath: settings.cfg.grq2
