@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: mozart-elasticsearch
   labels:
+    component: mozart
     run: mozart-elasticsearch
 spec:
   type: NodePort
@@ -14,6 +15,7 @@ spec:
     protocol: TCP
     name: tcp
   selector:
+    component: mozart
     run: mozart-elasticsearch
 ---
 apiVersion: apps/v1
@@ -23,11 +25,13 @@ metadata:
 spec:
   selector:
     matchLabels:
+      component: mozart
       run: mozart-elasticsearch
   replicas: 1
   template:
     metadata:
       labels:
+        component: mozart
         run: mozart-elasticsearch
     spec:
       containers:

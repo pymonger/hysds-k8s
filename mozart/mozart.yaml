@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: mozart
   labels:
+    component: mozart
     run: mozart
 spec:
   type: NodePort
@@ -26,6 +27,7 @@ spec:
     protocol: TCP
     name: supervisord
   selector:
+    component: mozart
     run: mozart
 ---
 apiVersion: apps/v1
@@ -35,11 +37,13 @@ metadata:
 spec:
   selector:
     matchLabels:
+      component: mozart
       run: mozart
   replicas: 1
   template:
     metadata:
       labels:
+        component: mozart
         run: mozart
     spec:
       containers:
@@ -63,7 +67,7 @@ spec:
             cpu: "0.1"
         volumeMounts:
         - mountPath: /home/ops/mozart/etc/celeryconfig.py
-          name: config
+          name: global-config
           subPath: celeryconfig.py
         - mountPath: /home/ops/mozart/etc/event_status.template
           name: config
@@ -95,8 +99,11 @@ spec:
         - mountPath: /home/ops/mozart/log
           name: log
       volumes:
+      - name: global-config
+        configMap:
+          name: hysds-global-config
       - name: config
         configMap:
-          name: mozart-config
+          name: hysds-mozart-config
       - name: log
         emptyDir: {}

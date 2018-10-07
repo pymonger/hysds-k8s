@@ -3,12 +3,14 @@ kind: Service
 metadata:
   name: mozart-redis
   labels:
+    component: mozart
     run: mozart-redis
 spec:
   ports:
   - port: 6379
     protocol: TCP
   selector:
+    component: mozart
     run: mozart-redis
 ---
 apiVersion: apps/v1
@@ -18,11 +20,13 @@ metadata:
 spec:
   selector:
     matchLabels:
+      component: mozart
       run: mozart-redis
   replicas: 1
   template:
     metadata:
       labels:
+        component: mozart
         run: mozart-redis
     spec:
       containers:
@@ -48,7 +52,7 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            name: mozart-redis-config
+            name: hysds-mozart-config
             items:
             - key: redis-config
               path: redis.conf
