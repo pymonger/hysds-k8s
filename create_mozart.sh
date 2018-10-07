@@ -12,6 +12,8 @@ kubectl create -f ${BASE_PATH}/mozart/mozart-redis.yaml \
                -f ${BASE_PATH}/mozart/mozart-rabbitmq.yaml \
                -f ${BASE_PATH}/mozart/mozart.yaml
 
+sleep 5
+
 # echo mozart interfaces
 MOZART_ELASTICSEARCH_FQDN=$(kubectl get pod -l run=mozart-elasticsearch -o jsonpath="{.items[0].spec.nodeName}")
 MOZART_ELASTICSEARCH_IP=$(kubectl get pod -l run=mozart-elasticsearch -o jsonpath="{.items[0].status.hostIP}")
