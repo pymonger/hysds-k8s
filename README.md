@@ -1,4 +1,19 @@
 # hysds-k8s
+Hybrid Cloud Science Data System deployment on Kubernetes
+
+## Requirements
+- Kubernetes cluster
+- `kubectl`
+
+## Deploy HySDS cluster
+```
+./create_hysds_cluster.sh
+```
+
+## Tear down HySDS cluster
+```
+./delete_hysds_cluster.sh
+```
 
 ## Mozart component services and deployments
 
@@ -19,13 +34,16 @@
     - head
     - kopf
 
-### Create/start
-```
-./create_mozart.sh
-./get_mozart_urls.sh
-```
+## GRQ component services and deployments
 
-### Delete/stop
-```
-./delete_mozart.sh
-```
+- grq
+  - GRQ2 REST API
+  - Tosca
+  - Apache httpd
+- grq-redis
+  - Redis
+- grq-elasticsearch
+  - Elasticsearch
+  - ES Plugins
+    - head
+    - kopf
