@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-redis
+  labels:
+    component: metrics
+    run: metrics-redis
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+  selector:
+    component: metrics
+    run: metrics-redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-redis
+  labels:
+    component: metrics
+    run: metrics-redis
+spec:
+  selector:
+    matchLabels:
+      component: metrics
+      run: metrics-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: metrics
+        run: metrics-redis
+    spec:
+      containers:
+      - name: metrics-redis
+        image: hysds/redis:latest
+        command: [ "redis-server" ]
+        args: [ "/redis-master/redis.conf" ]
+        env:
+        - name: MASTER
+          value: "true"
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            cpu: "0.5"
+        volumeMounts:
+        - mountPath: /data/redis
+          name: data
+        - mountPath: /redis-master
+          name: config
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: hysds-metrics-config
+            items:
+            - key: redis-config
+              path: redis.conf
