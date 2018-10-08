@@ -47,7 +47,7 @@ spec:
           name: http
         resources:
           limits:
-            cpu: "0.5"
+            cpu: "0.1"
         volumeMounts:
         - mountPath: /var/lib/rabbitmq
           name: data
