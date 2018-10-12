@@ -7,6 +7,8 @@ spec:
   - name: mozart
     image: hysds/mozart:latest
     ports:
+    - containerPort: 22
+      name: ssh
     - containerPort: 80
       name: http
     - containerPort: 443
@@ -47,9 +49,6 @@ spec:
     - mountPath: /home/ops/mozart/etc/settings.cfg
       name: config
       subPath: settings.cfg
-    - mountPath: /home/ops/mozart/etc/supervisord.conf
-      name: config
-      subPath: supervisord.conf
     - mountPath: /home/ops/mozart/etc/task_status.template
       name: config
       subPath: task_status.template

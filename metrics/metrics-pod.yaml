@@ -7,6 +7,8 @@ spec:
   - name: metrics
     image: hysds/metrics:latest
     ports:
+    - containerPort: 22
+      name: ssh
     - containerPort: 80
       name: http
     - containerPort: 443
@@ -32,9 +34,6 @@ spec:
     - mountPath: /home/ops/metrics/etc/indexer.conf
       name: config
       subPath: indexer.conf
-    - mountPath: /home/ops/metrics/etc/supervisord.conf
-      name: config
-      subPath: supervisord.conf
     - mountPath: /home/ops/metrics/log
       name: log
   volumes:

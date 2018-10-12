@@ -8,6 +8,9 @@ metadata:
 spec:
   type: NodePort
   ports:
+  - port: 22
+    protocol: TCP
+    name: ssh
   - port: 80
     protocol: TCP
     name: http
@@ -50,6 +53,8 @@ spec:
       - name: grq
         image: hysds/grq:latest
         ports:
+        - containerPort: 22
+          name: ssh
         - containerPort: 80
           name: http
         - containerPort: 443
@@ -76,9 +81,6 @@ spec:
         - mountPath: /home/ops/sciflo/etc/tosca_settings.cfg
           name: config
           subPath: settings.cfg.tosca
-        - mountPath: /home/ops/sciflo/etc/supervisord.conf
-          name: config
-          subPath: supervisord.conf
         - mountPath: /home/ops/sciflo/log
           name: log
       volumes:
