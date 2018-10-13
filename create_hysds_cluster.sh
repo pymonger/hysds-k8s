@@ -30,4 +30,5 @@ sleep 5
 
 # list urls
 ${BASE_PATH}/get_mozart_urls.sh
+${BASE_PATH}/get_metrics_urls.sh
 ${BASE_PATH}/get_grq_urls.sh
