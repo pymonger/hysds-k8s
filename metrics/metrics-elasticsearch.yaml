@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-elasticsearch
+  labels:
+    component: metrics
+    run: metrics-elasticsearch
+spec:
+  type: NodePort
+  ports:
+  - port: 9200
+    protocol: TCP
+    name: http
+  - port: 9300
+    protocol: TCP
+    name: tcp
+  selector:
+    component: metrics
+    run: metrics-elasticsearch
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-elasticsearch
+  labels:
+    component: metrics
+    run: metrics-elasticsearch
+spec:
+  selector:
+    matchLabels:
+      component: metrics
+      run: metrics-elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: metrics
+        run: metrics-elasticsearch
+    spec:
+      containers:
+      - name: metrics-elasticsearch
+        image: docker.io/elasticsearch:6.4.2
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: tcp
+        resources:
+          limits:
+            cpu: "0.1"
+        env:
+        - name: ES_HEAP_SIZE
+          value: "100m"
+        - name: MAX_LOCKED_MEMORY
+          value: "unlimited"
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: data
+      volumes:
+        - name: data
+          emptyDir: {}

@@ -15,10 +15,6 @@ spec:
       name: https
     - containerPort: 5601
       name: kibana
-    - containerPort: 9200
-      name: es-api
-    - containerPort: 9300
-      name: es-data
     - containerPort: 9001
       name: supervisord
     resources:

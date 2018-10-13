@@ -24,4 +24,5 @@ fi
 
 # deploy metrics services
 kubectl create -f ${BASE_PATH}/metrics/metrics-redis.yaml \
+               -f ${BASE_PATH}/metrics/metrics-elasticsearch.yaml \
                -f ${BASE_PATH}/metrics/metrics.yaml
