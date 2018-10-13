@@ -16,18 +16,12 @@ if [ $? -ne 0 ]; then
   kubectl create configmap hysds-global-config --from-file=${BASE_PATH}/config
 fi
 
-# deploy mozart services
-${BASE_PATH}/create_mozart.sh
+# create metrics configmap
+kubectl get configmap hysds-metrics-config 2>/dev/null
+if [ $? -ne 0 ]; then
+  kubectl create configmap hysds-metrics-config --from-file=${BASE_PATH}/metrics/config
+fi
 
 # deploy metrics services
-${BASE_PATH}/create_metrics.sh
-
-# deploy grq services
-${BASE_PATH}/create_grq.sh
-
-# sleep
-sleep 5
-
-# list urls
-${BASE_PATH}/get_mozart_urls.sh
-${BASE_PATH}/get_grq_urls.sh
+kubectl create -f ${BASE_PATH}/metrics/metrics-redis.yaml \
+               -f ${BASE_PATH}/metrics/metrics.yaml
