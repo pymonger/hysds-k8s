@@ -12,3 +12,6 @@ ${BASE_PATH}/delete_metrics.sh
 
 # delete grq services
 ${BASE_PATH}/delete_grq.sh
+
+# delete factotum services
+${BASE_PATH}/delete_factotum.sh

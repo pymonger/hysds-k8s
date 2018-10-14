@@ -13,6 +13,9 @@ ${BASE_PATH}/create_metrics.sh
 # deploy grq services
 ${BASE_PATH}/create_grq.sh
 
+# deploy factotum services
+${BASE_PATH}/create_factotum.sh
+
 # sleep
 sleep 5
 
