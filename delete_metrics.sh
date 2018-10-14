@@ -7,8 +7,8 @@ source ${BASE_PATH}/utils.sh
 # delete services
 kubectl delete svc,deploy -l component=metrics
 
-# delete grq configmap
-delete_comp_config grq
+# delete metrics configmap
+delete_comp_config metrics
 
 # delete global configmap
 delete_global_config

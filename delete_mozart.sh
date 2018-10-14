@@ -7,8 +7,8 @@ source ${BASE_PATH}/utils.sh
 # delete services
 kubectl delete svc,deploy -l component=mozart
 
-# delete grq configmap
-delete_comp_config grq
+# delete mozart configmap
+delete_comp_config mozart
 
 # delete global configmap
 delete_global_config
