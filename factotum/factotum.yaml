@@ -75,7 +75,7 @@ spec:
             name: global-config
             subPath: wait-for-it.sh
           command: ['sh', '/wait-for-it.sh', '-t', '0', 'metrics-redis:6379']
-        - name: init-grq-elasticsearch
+        - name: init-grq-rest
           image: busybox
           volumeMounts:
           - mountPath: /wait-for-it.sh
