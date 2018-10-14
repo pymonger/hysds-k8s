@@ -9,6 +9,14 @@ Hybrid Cloud Science Data System deployment on Kubernetes
 ```
 ./create_hysds_cluster.sh
 ```
+Wait until all pods are running:
+```
+kubectl get po --all-namespaces -w
+```
+Open up browser interfaces:
+```
+./open_urls_localhost.sh
+```
 
 ## Tear down HySDS cluster
 ```
