@@ -70,6 +70,9 @@ spec:
         volumeMounts:
         - name: storage # must match the volume name, above
           mountPath: "/storage"
+        resources:
+          limits:
+            cpu: "0.5"
 ---
 apiVersion: v1
 kind: Service
