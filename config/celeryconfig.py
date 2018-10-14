@@ -84,7 +84,7 @@ REDIS_JOB_INFO_URL = "redis://metrics-redis"
 REDIS_JOB_INFO_KEY = "logstash"
 REDIS_INSTANCE_METRICS_URL = "redis://metrics-redis"
 REDIS_INSTANCE_METRICS_KEY = "logstash"
-REDIS_UNIX_DOMAIN_SOCKET = "unix:///data/tmp/redis.sock"
+REDIS_UNIX_DOMAIN_SOCKET = "redis://mozart-redis"
 
 WORKER_CONTIGUOUS_FAILURE_THRESHOLD = 10
 WORKER_CONTIGUOUS_FAILURE_TIME = 5.
