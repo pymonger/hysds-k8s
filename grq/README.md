@@ -169,7 +169,7 @@
    {
      "status" : 200,
      "name" : "grq-elasticsearch",
-     "cluster_name" : "resource_cluster",
+     "cluster_name" : "product_cluster",
      "version" : {
        "number" : "1.7.6",
        "build_hash" : "c730b59357f8ebc555286794dcd90b3411f517c9",

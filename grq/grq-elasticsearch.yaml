@@ -42,7 +42,7 @@ spec:
         image: hysds/elasticsearch:latest
         command: [ "elasticsearch" ]
         args: [ "-Des.node.name='grq-elasticsearch'",
-                "-Des.cluster.name='resource_cluster'",
+                "-Des.cluster.name='product_cluster'",
                 "-Des.bootstrap.mlockall=true",
                 "-Des.network.host=0" ]
         ports:
