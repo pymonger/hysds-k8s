@@ -64,6 +64,8 @@ spec:
           limits:
             cpu: "0.5"
         volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: dockersock
         - mountPath: /home/ops/.ssh/id_rsa
           name: global-secrets
           subPath: id_rsa
@@ -84,6 +86,9 @@ spec:
         - mountPath: /home/ops/verdi/log
           name: log
       volumes:
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
       - name: global-secrets
         secret:
           secretName: hysds-global-secrets
