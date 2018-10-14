@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: factotum
+  name: ci
   labels:
-    component: factotum
-    run: factotum
+    component: ci
+    run: ci
 spec:
   type: NodePort
   ports:
@@ -17,6 +17,9 @@ spec:
   - port: 443
     protocol: TCP
     name: https
+  - port: 8080
+    protocol: TCP
+    name: jenkins
   - port: 8085
     protocol: TCP
     name: dav
@@ -24,31 +27,31 @@ spec:
     protocol: TCP
     name: supervisord
   selector:
-    component: factotum
-    run: factotum
+    component: ci
+    run: ci
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: factotum
+  name: ci
   labels:
-    component: factotum
-    run: factotum
+    component: ci
+    run: ci
 spec:
   selector:
     matchLabels:
-      component: factotum
-      run: factotum
+      component: ci
+      run: ci
   replicas: 1
   template:
     metadata:
       labels:
-        component: factotum
-        run: factotum
+        component: ci
+        run: ci
     spec:
       containers:
-      - name: factotum
-        image: hysds/verdi:latest
+      - name: ci
+        image: hysds/cont_int:latest
         ports:
         - containerPort: 22
           name: ssh
@@ -56,6 +59,8 @@ spec:
           name: http
         - containerPort: 443
           name: https
+        - containerPort: 8080
+          name: jenkins
         - containerPort: 8085
           name: dav
         - containerPort: 9001
@@ -80,9 +85,6 @@ spec:
         - mountPath: /home/ops/verdi/etc/datasets.json
           name: global-config
           subPath: datasets.json
-        - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
-          name: config
-          subPath: factotum.conf
         - mountPath: /home/ops/verdi/log
           name: log
         - mountPath: /data/work
@@ -97,9 +99,6 @@ spec:
       - name: global-config
         configMap:
           name: hysds-global-config
-      - name: config
-        configMap:
-          name: hysds-factotum-config
       - name: log
         emptyDir: {}
       - name: work

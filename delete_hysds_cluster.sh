@@ -15,3 +15,6 @@ ${BASE_PATH}/delete_grq.sh
 
 # delete factotum services
 ${BASE_PATH}/delete_factotum.sh
+
+# delete ci services
+${BASE_PATH}/delete_ci.sh

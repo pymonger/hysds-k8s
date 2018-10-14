@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: factotum
+  name: ci
 spec:
   containers:
-  - name: factotum
-    image: hysds/verdi:latest
+  - name: ci
+    image: hysds/cont_int:latest
     ports:
     - containerPort: 22
       name: ssh
@@ -13,6 +13,8 @@ spec:
       name: http
     - containerPort: 443
       name: https
+    - containerPort: 8080
+      name: jenkins
     - containerPort: 8085
       name: dav
     - containerPort: 9001
@@ -37,9 +39,6 @@ spec:
     - mountPath: /home/ops/verdi/etc/datasets.json
       name: global-config
       subPath: datasets.json
-    - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
-      name: config
-      subPath: factotum.conf
     - mountPath: /home/ops/verdi/log
       name: log
     - mountPath: /data/work
@@ -54,9 +53,6 @@ spec:
   - name: global-config
     configMap:
       name: hysds-global-config
-  - name: config
-    configMap:
-      name: hysds-factotum-config
   - name: log
     emptyDir: {}
   - name: work

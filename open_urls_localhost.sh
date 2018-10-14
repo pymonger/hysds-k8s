@@ -26,3 +26,7 @@ GRQ_REST_PORT=$(kubectl get service grq -o jsonpath='{.spec.ports[?(@.name=="grq
 python -m webbrowser -t https://localhost:${GRQ_PORT}/search
 python -m webbrowser -t http://localhost:${GRQ_REST_PORT}/api/v0.1/
 python -m webbrowser -t http://localhost:${GRQ_ELASTICSEARCH_PORT}/_plugin/head
+
+# open ci urls
+CI_JENKINS_PORT=$(kubectl get service ci -o jsonpath='{.spec.ports[?(@.name=="jenkins")].nodePort}')
+python -m webbrowser -t http://localhost:${CI_JENKINS_PORT}
