@@ -3,6 +3,21 @@ kind: Pod
 metadata:
   name: grq
 spec:
+  initContainers:
+    - name: init-grq-redis
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'grq-redis:6379']
+    - name: init-grq-elasticsearch
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'grq-elasticsearch:9200']
   containers:
   - name: grq
     image: hysds/grq:latest

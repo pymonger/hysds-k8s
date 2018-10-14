@@ -46,6 +46,21 @@ spec:
         component: metrics
         run: metrics
     spec:
+      initContainers:
+        - name: init-metrics-redis
+          image: busybox
+          volumeMounts:
+          - mountPath: /wait-for-it.sh
+            name: global-config
+            subPath: wait-for-it.sh
+          command: ['sh', '/wait-for-it.sh', '-t', '0', 'metrics-redis:6379']
+        - name: init-metrics-elasticsearch
+          image: busybox
+          volumeMounts:
+          - mountPath: /wait-for-it.sh
+            name: global-config
+            subPath: wait-for-it.sh
+          command: ['sh', '/wait-for-it.sh', '-t', '0', 'metrics-elasticsearch:9200']
       containers:
       - name: metrics
         image: hysds/metrics:latest

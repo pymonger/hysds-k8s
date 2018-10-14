@@ -3,6 +3,42 @@ kind: Pod
 metadata:
   name: factotum
 spec:
+  initContainers:
+    - name: init-mozart-rabbitmq
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-rabbitmq:15672']
+    - name: init-mozart-redis
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-redis:6379']
+    - name: init-mozart-elasticsearch
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-elasticsearch:9200']
+    - name: init-metrics-redis
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'metrics-redis:6379']
+    - name: init-grq-elasticsearch
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'grq:8878']
   containers:
   - name: factotum
     image: hysds/verdi:latest
