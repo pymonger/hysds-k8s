@@ -33,6 +33,14 @@ spec:
       name: global-secrets
       subPath: id_rsa.pub
       readOnly: true
+    - mountPath: /home/ops/.aws/config
+      name: global-config
+      subPath: aws_config
+      readOnly: true
+    - mountPath: /home/ops/.aws/credentials
+      name: global-config
+      subPath: aws_credentials
+      readOnly: true
     - mountPath: /home/ops/mozart/etc/celeryconfig.py
       name: global-config
       subPath: celeryconfig.py

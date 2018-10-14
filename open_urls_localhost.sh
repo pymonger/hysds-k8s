@@ -30,3 +30,7 @@ python -m webbrowser -t http://localhost:${GRQ_ELASTICSEARCH_PORT}/_plugin/head
 # open ci urls
 CI_JENKINS_PORT=$(kubectl get service ci -o jsonpath='{.spec.ports[?(@.name=="jenkins")].nodePort}')
 python -m webbrowser -t http://localhost:${CI_JENKINS_PORT}
+
+# open minio urls
+MINIO_PORT=$(kubectl get service minio-service -o jsonpath='{.spec.ports[?(@.name=="minio")].nodePort}')
+python -m webbrowser -t http://localhost:${MINIO_PORT}

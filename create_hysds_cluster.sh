@@ -4,6 +4,9 @@ BASE_PATH=$(cd "${BASE_PATH}"; pwd)
 source ${BASE_PATH}/utils.sh
 
 
+# deploy minio services
+${BASE_PATH}/create_minio.sh
+
 # deploy mozart services
 ${BASE_PATH}/create_mozart.sh
 
@@ -27,3 +30,4 @@ ${BASE_PATH}/get_mozart_urls.sh
 ${BASE_PATH}/get_metrics_urls.sh
 ${BASE_PATH}/get_grq_urls.sh
 ${BASE_PATH}/get_ci_urls.sh
+${BASE_PATH}/get_minio_urls.sh

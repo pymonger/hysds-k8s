@@ -9,18 +9,18 @@
       "type": "area_of_interest",
       "publish": {
         "s3-profile-name": "default",
-        "location": "s3://{{ DATASET_S3_ENDPOINT }}:80/{{ DATASET_BUCKET }}/products/area_of_interest/{version}/{id}",
+        "location": "s3://minio-service:9000/dataset-bucket/products/area_of_interest/{version}/{id}",
         "urls": [
-          "http://{{ DATASET_BUCKET }}.{{ DATASET_S3_WEBSITE_ENDPOINT }}/products/area_of_interest/{version}/{id}",
-          "s3://{{ DATASET_S3_ENDPOINT }}:80/{{ DATASET_BUCKET }}/products/area_of_interest/{version}/{id}"
+          "http://minio-service:9000/dataset-bucket/products/area_of_interest/{version}/{id}",
+          "s3://minio-service:9000/dataset-bucket/products/area_of_interest/{version}/{id}"
         ]
       },
       "browse": {
         "s3-profile-name": "default",
-        "location": "s3://{{ DATASET_S3_ENDPOINT }}:80/{{ DATASET_BUCKET }}/browse/area_of_interest/{version}/{id}",
+        "location": "s3://minio-service:9000/dataset-bucket/browse/area_of_interest/{version}/{id}",
         "urls": [
-          "http://{{ DATASET_BUCKET }}.{{ DATASET_S3_WEBSITE_ENDPOINT }}/browse/area_of_interest/{version}/{id}",
-          "s3://{{ DATASET_S3_ENDPOINT }}:80/{{ DATASET_BUCKET }}/browse/area_of_interest/{version}/{id}"
+          "http://minio-service:9000/dataset-bucket/browse/area_of_interest/{version}/{id}",
+          "s3://minio-service:9000/dataset-bucket/browse/area_of_interest/{version}/{id}"
         ]
       }
     }

@@ -88,21 +88,21 @@ DAV_USER:
 DAV_PASSWORD: 
 
 # AWS settings for product bucket
-DATASET_AWS_ACCESS_KEY: 
-DATASET_AWS_SECRET_KEY: 
-DATASET_AWS_REGION: us-west-2
-DATASET_S3_ENDPOINT: s3-us-west-2.amazonaws.com
-DATASET_S3_WEBSITE_ENDPOINT: s3-website-us-west-2.amazonaws.com
-DATASET_BUCKET: 
+DATASET_AWS_ACCESS_KEY: hysds-k8s
+DATASET_AWS_SECRET_KEY: hysds-k8s
+DATASET_AWS_REGION: us-east-1
+DATASET_S3_ENDPOINT: minio-service:9000
+DATASET_S3_WEBSITE_ENDPOINT: 127.0.0.1:9000
+DATASET_BUCKET: dataset-bucket
 
 # AWS settings for autoscale workers
-AWS_ACCESS_KEY: 
-AWS_SECRET_KEY: 
-AWS_REGION: us-west-2
-S3_ENDPOINT: s3-us-west-2.amazonaws.com
-CODE_BUCKET: 
-VERDI_PRIMER_IMAGE: 
-VERDI_TAG: 
+AWS_ACCESS_KEY: hysds-k8s
+AWS_SECRET_KEY: hysds-k8s
+AWS_REGION: us-east-1
+S3_ENDPOINT: minio-service:9000
+CODE_BUCKET: code-bucket
+VERDI_PRIMER_IMAGE: s3://code-bucket/hysds-verdi-latest.tar.gz
+VERDI_TAG: latest
 VERDI_UID: 1000
 VERDI_GID: 1000
 QUEUES: dumby-job_worker-small dumby-job_worker-large
