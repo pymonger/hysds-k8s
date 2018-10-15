@@ -104,6 +104,9 @@ spec:
         - mountPath: /home/ops/metrics/etc/indexer.conf
           name: config
           subPath: indexer.conf
+        - mountPath: /home/ops/kibana/config/kibana.yml
+          name: config
+          subPath: kibana.yml
         - mountPath: /home/ops/metrics/log
           name: log
       volumes:
