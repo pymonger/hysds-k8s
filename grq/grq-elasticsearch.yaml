@@ -37,12 +37,25 @@ spec:
         component: grq
         run: grq-elasticsearch
     spec:
+      initContainers:
+        - name: init-grq-data
+          image: alpine/git
+          resources:
+            requests:
+              ephemeral-storage: "8Gi"
+          volumeMounts:
+          - mountPath: /usr/share/elasticsearch/data
+            name: data
+          - mountPath: /wait-for-it.sh
+            name: global-config
+            subPath: wait-for-it.sh
+          command: ['sh', '-c', 'if [ ! -d "/usr/share/elasticsearch/data/products_cluster" ]; then git clone https://github.com/hysds/puppet-grq.git; cat puppet-grq/files/elasticsearch-data.tbz2.* > elasticsearch-data.tbz2; tar xjvf elasticsearch-data.tbz2; mv elasticsearch/products_cluster /usr/share/elasticsearch/data/; fi;']
       containers:
       - name: grq-elasticsearch
         image: hysds/elasticsearch:latest
         command: [ "elasticsearch" ]
         args: [ "-Des.node.name='grq-elasticsearch'",
-                "-Des.cluster.name='product_cluster'",
+                "-Des.cluster.name='products_cluster'",
                 "-Des.bootstrap.mlockall=true",
                 "-Des.network.host=0" ]
         ports:
@@ -64,7 +77,11 @@ spec:
         - mountPath: /usr/share/elasticsearch/config
           name: config
       volumes:
+        - name: global-config
+          configMap:
+            name: hysds-global-config
         - name: data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: grq-elasticsearch-pvc
         - name: config
           emptyDir: {}

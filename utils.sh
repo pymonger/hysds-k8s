@@ -60,3 +60,14 @@ delete_comp_config() {
     kubectl delete configmap hysds-${comp}-config
   fi
 }
+
+
+# create persistentvolume
+create_pv() {
+  pv=$1
+  pv_yaml=$2
+  kubectl get pv ${pv} 2>/dev/null
+  if [ $? -ne 0 ]; then
+    kubectl create -f ${pv_yaml}
+  fi
+}

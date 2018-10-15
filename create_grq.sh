@@ -13,6 +13,10 @@ create_global_config
 # create grq configmap
 create_comp_config grq
 
+# create grq elasticsearch pv
+mkdir -p ${BASE_PATH}/grq/data
+create_pv grq-elasticsearch-pv ${BASE_PATH}/grq/grq-elasticsearch-data.yaml
+
 # deploy grq services
 kubectl create -f ${BASE_PATH}/grq/grq-redis.yaml \
                -f ${BASE_PATH}/grq/grq-elasticsearch.yaml \

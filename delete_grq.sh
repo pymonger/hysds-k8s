@@ -5,6 +5,7 @@ source ${BASE_PATH}/utils.sh
 
 
 # delete services
+#kubectl delete svc,deploy,pv,pvc -l component=grq
 kubectl delete svc,deploy -l component=grq
 
 # delete grq configmap
