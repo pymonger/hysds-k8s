@@ -68,7 +68,7 @@ spec:
             cpu: "0.5"
         env:
         - name: ES_HEAP_SIZE
-          value: "100m"
+          value: "1g"
         - name: MAX_LOCKED_MEMORY
           value: "unlimited"
         volumeMounts:

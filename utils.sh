@@ -66,8 +66,10 @@ delete_comp_config() {
 create_pv() {
   pv=$1
   pv_yaml=$2
+  pvc_yaml=$3
   kubectl get pv ${pv} 2>/dev/null
   if [ $? -ne 0 ]; then
     kubectl create -f ${pv_yaml}
+    kubectl create -f ${pvc_yaml}
   fi
 }
