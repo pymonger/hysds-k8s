@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 #   Use this script to test if a given TCP host/port are available
 
-set -e
-
 cmdname=$(basename "$0")
 
 echoerr() {
@@ -46,6 +44,8 @@ wait_for()
             echoerr "$cmdname: $HOST:$PORT is available after $((end_ts - start_ts)) seconds"
             break
         fi
+        end_ts=$(date +%s)
+        echoerr "$cmdname: still waiting for $HOST:$PORT after $((end_ts - start_ts)) seconds"
         sleep 1
     done
     return $result
