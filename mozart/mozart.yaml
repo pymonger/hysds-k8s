@@ -142,6 +142,9 @@ spec:
         - mountPath: /home/ops/mozart/etc/worker_status.template
           name: config
           subPath: worker_status.template
+        - mountPath: /home/ops/mozart/etc/job_creators
+          name: config
+          subPath: job_creators
         - mountPath: /home/ops/sds.yaml
           name: config
           subPath: sds.yaml
