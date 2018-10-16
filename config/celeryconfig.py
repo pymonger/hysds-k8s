@@ -1,3 +1,4 @@
+K8S = True
 BROKER_URL = "amqp://mozart-rabbitmq:5672//"
 CELERY_RESULT_BACKEND = "redis://mozart-redis"
 

@@ -42,9 +42,6 @@ spec:
   containers:
   - name: factotum
     image: hysds/verdi:latest
-    env:
-    - name: HYSDS_ON_K8S
-      value: "1"
     ports:
     - containerPort: 22
       name: ssh
