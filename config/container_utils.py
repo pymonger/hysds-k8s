@@ -16,11 +16,11 @@ import osaka.main
 IMAGE_LOAD_TIME_MAX = 600
 
 
-def verify_docker_mount(m):
+def verify_docker_mount(m, blacklist=app.conf.WORKER_MOUNT_BLACKLIST):
     """Verify host mount."""
 
     if m == "/": raise(RuntimeError("Cannot mount host root directory"))
-    for k in app.conf.WORKER_MOUNT_BLACKLIST:
+    for k in blacklist:
         if m.startswith(k):
             raise(RuntimeError("Cannot mount %s: %s is blacklisted" % (m, k)))
     return True
@@ -56,9 +56,6 @@ def get_docker_params(image_name, image_url, image_mappings, root_work_dir, job_
     }
 
     # add default image mappings
-    for f in ("/etc/hosts", "/etc/resolv.conf"):
-        if f not in image_mappings and f not in image_mappings.values():
-            image_mappings[f] = f
     celery_cfg_file = os.environ.get('HYSDS_CELERY_CFG',
                                      os.path.join(os.path.dirname(app.conf.__file__),
                                                   "celeryconfig.py"))
@@ -70,10 +67,19 @@ def get_docker_params(image_name, image_url, image_mappings, root_work_dir, job_
     if dsets_cfg_file not in image_mappings and "datasets.json" not in image_mappings.values():
         image_mappings[dsets_cfg_file] = "datasets.json"
 
+    # if running on k8s add hosts and resolv.conf
+    blacklist = app.conf.WORKER_MOUNT_BLACKLIST
+    on_k8s = int(os.environ.get('HYSDS_ON_K8S', 0))
+    if on_k8s:
+        for f in ("/etc/hosts", "/etc/resolv.conf"):
+            if f not in image_mappings and f not in image_mappings.values():
+                image_mappings[f] = f
+        blacklist = [i for i in blacklist if i != "/etc"]
+
     # add user-defined image mappings
     for k, v in image_mappings.iteritems():
         k = os.path.expandvars(k)
-        verify_docker_mount(k)
+        verify_docker_mount(k, blacklist)
         mode = "ro"
         if isinstance(v, list):
             if len(v) > 1: v, mode = v[0:2]
