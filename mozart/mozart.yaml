@@ -145,6 +145,9 @@ spec:
         - mountPath: /home/ops/sds.yaml
           name: config
           subPath: sds.yaml
+        - mountPath: /home/ops/.netrc
+          name: config
+          subPath: netrc
         - mountPath: /home/ops/mozart/log
           name: log
       volumes:
