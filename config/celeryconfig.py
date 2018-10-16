@@ -95,7 +95,7 @@ WEBDAV_PORT = 8085
 
 WORKER_MOUNT_BLACKLIST = [
     "/dev",
-    "/etc",
+    #"/etc", allow for DooD containers to access pod network
     "/lib",
     "/proc",
     "/usr",

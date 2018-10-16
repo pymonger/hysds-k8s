@@ -99,9 +99,13 @@ spec:
         resources:
           limits:
             cpu: "0.5"
+        securityContext: 
+          privileged: true 
         volumeMounts:
         - mountPath: /var/run/docker.sock
           name: dockersock
+        - mountPath: /data/work
+          name: work
         - mountPath: /home/ops/.ssh/id_rsa
           name: global-secrets
           subPath: id_rsa
@@ -124,17 +128,21 @@ spec:
         - mountPath: /home/ops/verdi/etc/datasets.json
           name: global-config
           subPath: datasets.json
+        - mountPath: /home/ops/verdi/ops/hysds/hysds/container_utils.py
+          name: global-config
+          subPath: container_utils.py
         - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
           name: config
           subPath: factotum.conf
         - mountPath: /home/ops/verdi/log
           name: log
-        - mountPath: /data/work
-          name: work
       volumes:
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
+      - name: work
+        hostPath:
+          path: /data/work
       - name: global-secrets
         secret:
           secretName: hysds-global-secrets
@@ -145,6 +153,4 @@ spec:
         configMap:
           name: hysds-factotum-config
       - name: log
-        emptyDir: {}
-      - name: work
         emptyDir: {}
