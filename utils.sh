@@ -73,3 +73,14 @@ create_pv() {
     kubectl create -f ${pvc_yaml}
   fi
 }
+
+
+# create cinder storage class
+create_cinder_sc() {
+  sc=$1
+  sc_yaml=$2
+  kubectl get sc ${sc} 2>/dev/null
+  if [ $? -ne 0 ]; then
+    kubectl create -f ${sc_yaml}
+  fi
+}

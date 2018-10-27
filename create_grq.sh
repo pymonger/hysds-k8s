@@ -13,15 +13,12 @@ create_global_config
 # create grq configmap
 create_comp_config grq
 
-# create grq elasticsearch pv and pvc
-mkdir -p ${BASE_PATH}/grq/data
-cat ${BASE_PATH}/grq/grq-elasticsearch-pv_singlenode.yaml.tmpl | \
-  sed "s#__HOSTPATH__#${BASE_PATH}/grq/data/elasticsearch#" > \
-  ${BASE_PATH}/grq/grq-elasticsearch-pv.yaml
-create_pv grq-elasticsearch-pv \
-  ${BASE_PATH}/grq/grq-elasticsearch-pv.yaml \
-  ${BASE_PATH}/grq/grq-elasticsearch-pvc.yaml
-rm -rf ${BASE_PATH}/grq/grq-elasticsearch-pv.yaml
+# create cinder storage class
+create_cinder_sc standard \
+  ${BASE_PATH}/globals/cinder_storageclass.yaml
+
+# create grq elasticsearch pvc
+kubectl create -f ${BASE_PATH}/grq/grq-elasticsearch-pvc.yaml
 
 # deploy grq services
 kubectl create -f ${BASE_PATH}/grq/grq-redis.yaml \

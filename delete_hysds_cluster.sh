@@ -5,7 +5,7 @@ source ${BASE_PATH}/utils.sh
 
 
 # delete minio services
-${BASE_PATH}/delete_minio.sh
+#${BASE_PATH}/delete_minio.sh
 
 # delete mozart services
 ${BASE_PATH}/delete_mozart.sh

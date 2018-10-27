@@ -5,7 +5,7 @@ source ${BASE_PATH}/utils.sh
 
 
 # deploy minio services
-${BASE_PATH}/create_minio.sh
+#${BASE_PATH}/create_minio.sh
 
 # deploy mozart services
 ${BASE_PATH}/create_mozart.sh
