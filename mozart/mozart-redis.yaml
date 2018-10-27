@@ -44,7 +44,7 @@ spec:
         - containerPort: 6379
         resources:
           limits:
-            cpu: "0.5"
+            cpu: "1.0"
         volumeMounts:
         - mountPath: /data/redis
           name: data

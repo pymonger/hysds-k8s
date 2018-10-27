@@ -21,7 +21,7 @@ spec:
       name: supervisord
     resources:
       limits:
-        cpu: "0.5"
+        cpu: "1.0"
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: dockersock
