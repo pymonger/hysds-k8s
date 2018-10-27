@@ -1,3 +1,4 @@
 secrets
 grq/grq-elasticsearch-pv.yaml
 grq/data
+config/aws_credentials
