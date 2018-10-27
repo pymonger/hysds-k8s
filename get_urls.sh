@@ -9,4 +9,4 @@ ${BASE_PATH}/get_mozart_urls.sh
 ${BASE_PATH}/get_metrics_urls.sh
 ${BASE_PATH}/get_grq_urls.sh
 ${BASE_PATH}/get_ci_urls.sh
-${BASE_PATH}/get_minio_urls.sh
+#${BASE_PATH}/get_minio_urls.sh
