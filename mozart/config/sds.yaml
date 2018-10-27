@@ -90,18 +90,18 @@ DAV_PASSWORD:
 # AWS settings for product bucket
 DATASET_AWS_ACCESS_KEY: hysds-k8s
 DATASET_AWS_SECRET_KEY: hysds-k8s
-DATASET_AWS_REGION: us-east-1
-DATASET_S3_ENDPOINT: minio-service:9000
-DATASET_S3_WEBSITE_ENDPOINT: 127.0.0.1:9000
-DATASET_BUCKET: dataset-bucket
+DATASET_AWS_REGION: RegionOne
+DATASET_S3_ENDPOINT: iu.jetstream-cloud.org:8080
+DATASET_S3_WEBSITE_ENDPOINT: iu.jetstream-cloud.org:8080
+DATASET_BUCKET: hysds-dataset-bucket
 
 # AWS settings for autoscale workers
 AWS_ACCESS_KEY: hysds-k8s
 AWS_SECRET_KEY: hysds-k8s
-AWS_REGION: us-east-1
-S3_ENDPOINT: minio-service:9000
-CODE_BUCKET: code-bucket
-VERDI_PRIMER_IMAGE: s3://code-bucket/hysds-verdi-latest.tar.gz
+AWS_REGION: RegionOne
+S3_ENDPOINT: iu.jetstream-cloud.org:8080
+CODE_BUCKET: hysds-code-bucket
+VERDI_PRIMER_IMAGE: s3://hysds-code-bucket/hysds-verdi-latest.tar.gz
 VERDI_TAG: latest
 VERDI_UID: 1000
 VERDI_GID: 1000
