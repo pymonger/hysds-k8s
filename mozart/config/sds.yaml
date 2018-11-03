@@ -101,7 +101,7 @@ AWS_SECRET_KEY: hysds-k8s
 AWS_REGION: RegionOne
 S3_ENDPOINT: iu.jetstream-cloud.org:8080
 CODE_BUCKET: hysds-code-bucket
-VERDI_PRIMER_IMAGE: s3://hysds-code-bucket/hysds-verdi-latest.tar.gz
+VERDI_PRIMER_IMAGE: s3s://hysds-code-bucket/hysds-verdi-latest.tar.gz
 VERDI_TAG: latest
 VERDI_UID: 1000
 VERDI_GID: 1000

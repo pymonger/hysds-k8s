@@ -21,6 +21,9 @@ create_cinder_sc standard \
 create_pvc grq-elasticsearch-pvc \
   ${BASE_PATH}/grq/grq-elasticsearch-pvc.yaml
 
+# give time for persistentvolume creation
+sleep 10
+
 # deploy grq services
 kubectl create -f ${BASE_PATH}/grq/grq-redis.yaml \
                -f ${BASE_PATH}/grq/grq-elasticsearch.yaml \
