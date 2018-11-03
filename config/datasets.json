@@ -12,7 +12,7 @@
         "location": "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/products/area_of_interest/{version}/{id}",
         "urls": [
           "https://iu.jetstream-cloud.org:8080/swift/v1/hysds-dataset-bucket/products/area_of_interest/{version}/{id}",
-          "s3s//iu.jetstream-cloud.org:8080/hysds-dataset-bucket/products/area_of_interest/{version}/{id}"
+          "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/products/area_of_interest/{version}/{id}"
         ]
       },
       "browse": {
@@ -20,7 +20,7 @@
         "location": "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/browse/area_of_interest/{version}/{id}",
         "urls": [
           "https://iu.jetstream-cloud.org:8080/swift/v1/hysds-dataset-bucket/browse/area_of_interest/{version}/{id}",
-          "s3s//iu.jetstream-cloud.org:8080/hysds-dataset-bucket/browse/area_of_interest/{version}/{id}"
+          "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/browse/area_of_interest/{version}/{id}"
         ]
       }
     }
