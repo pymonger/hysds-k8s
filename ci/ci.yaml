@@ -49,6 +49,20 @@ spec:
         component: ci
         run: ci
     spec:
+      initContainers:
+      - name: overwrite-container-builder
+        image: alpine/git
+        volumeMounts:
+        - mountPath: /container-builder
+          name: container-builder
+        - mountPath: /container-met.py
+          name: config
+          subPath: container-met.py
+        - mountPath: /overwrite-container-builder.sh
+          name: config
+          subPath: overwrite-container-builder.sh
+        workingDir: /container-builder
+        command: ['sh', '/overwrite-container-builder.sh']
       containers:
       - name: ci
         image: hysds/cont_int:latest
@@ -93,6 +107,8 @@ spec:
         - mountPath: /home/ops/verdi/etc/datasets.json
           name: global-config
           subPath: datasets.json
+        - mountPath: /home/ops/verdi/ops/container-builder
+          name: container-builder
         - mountPath: /home/ops/verdi/log
           name: log
         - mountPath: /data/work
@@ -107,7 +123,12 @@ spec:
       - name: global-config
         configMap:
           name: hysds-global-config
+      - name: config
+        configMap:
+          name: hysds-ci-config
       - name: log
         emptyDir: {}
       - name: work
+        emptyDir: {}
+      - name: container-builder
         emptyDir: {}

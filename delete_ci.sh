@@ -7,6 +7,9 @@ source ${BASE_PATH}/utils.sh
 # delete services
 kubectl delete svc,deploy -l component=ci
 
+# delete ci configmap
+delete_comp_config ci
+
 # delete global configmap
 delete_global_config
 

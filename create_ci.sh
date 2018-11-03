@@ -10,5 +10,8 @@ create_global_secrets
 # create global configmap
 create_global_config
 
+# create ci configmap
+create_comp_config ci
+
 # deploy ci services
 kubectl create -f ${BASE_PATH}/ci/ci.yaml
