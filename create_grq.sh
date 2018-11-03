@@ -19,7 +19,7 @@ create_cinder_sc standard \
 
 # create grq elasticsearch pvc
 create_pvc grq-elasticsearch-pvc \
-  -f ${BASE_PATH}/grq/grq-elasticsearch-pvc.yaml
+  ${BASE_PATH}/grq/grq-elasticsearch-pvc.yaml
 
 # deploy grq services
 kubectl create -f ${BASE_PATH}/grq/grq-redis.yaml \

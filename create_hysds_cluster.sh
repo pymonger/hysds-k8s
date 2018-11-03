@@ -5,18 +5,22 @@ source ${BASE_PATH}/utils.sh
 
 
 # get access secret keys
-if [ "$#" -ne 2 ]; then
-  echo "Enter access and secret keys as args: $0 <access key> <secret key>"
-  echo "e.g.: $0 12345 54321"
+if [ "$#" -ne 4 ]; then
+  echo "Enter AWS and Swift access and secret keys as args: $0 <aws access key> <aws secret key> <swift access key> <swift secret key>"
+  echo "e.g.: $0 12345 54321 asdf fdsa"
   exit 1
 fi
-ACCESS_KEY=$1
-SECRET_KEY=$2
+AWS_ACCESS_KEY=$1
+AWS_SECRET_KEY=$2
+SWIFT_ACCESS_KEY=$3
+SWIFT_SECRET_KEY=$4
 
 
 cat ${BASE_PATH}/config/aws_credentials.tmpl | \
-  sed "s#__ACCESS_KEY__#${ACCESS_KEY}#" | \
-  sed "s#__SECRET_KEY__#${SECRET_KEY}#" > \
+  sed "s#__AWS_ACCESS_KEY__#${AWS_ACCESS_KEY}#" | \
+  sed "s#__AWS_SECRET_KEY__#${AWS_SECRET_KEY}#" | \
+  sed "s#__SWIFT_ACCESS_KEY__#${SWIFT_ACCESS_KEY}#" | \
+  sed "s#__SWIFT_SECRET_KEY__#${SWIFT_SECRET_KEY}#" > \
   ${BASE_PATH}/config/aws_credentials
 
 
