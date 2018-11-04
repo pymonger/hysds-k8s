@@ -131,6 +131,12 @@ spec:
         - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
           name: config
           subPath: factotum.conf
+        - mountPath: /home/ops/verdi/etc/conf.d/grfn.conf
+          name: config
+          subPath: grfn.conf
+        - mountPath: /home/ops/verdi/etc/conf.d/aria.conf
+          name: config
+          subPath: aria.conf
         - mountPath: /home/ops/verdi/log
           name: log
       volumes:

@@ -23,6 +23,29 @@
           "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/browse/area_of_interest/{version}/{id}"
         ]
       }
+    },
+    {
+      "ipath": "ariamh::data/S1-IFG",
+      "match_pattern": "/(?P<pre>S1-IFG_.*?_TN.*?_.*?-)(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})(?P<rest>.+)$",
+      "alt_match_pattern": null,
+      "extractor": null,
+      "level": "l2",
+      "type": "interferogram",
+      "publish": {
+        "s3-profile-name": "default",
+        "location": "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/products/{type}/{version}/{year}/{month}/{day}/{pre}{year}{month}{day}{rest}",
+        "urls": [
+          "https://iu.jetstream-cloud.org:8080/swift/v1/hysds-dataset-bucket/products/{type}/{version}/{year}/{month}/{day}/{pre}{year}{month}{day}{rest}",
+          "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/products/{type}/{version}/{year}/{month}/{day}/{pre}{year}{month}{day}{rest}"
+        ]
+      },
+      "browse": {
+        "s3-profile-name": "default",
+        "location": "s3s://iu.jetstream-cloud.org:8080/hysds-dataset-bucket/browse/{type}/{version}/{year}/{month}/{day}/{pre}{year}{month}{day}{rest}",
+        "urls": [
+          "https://iu.jetstream-cloud.org:8080/swift/v1/hysds-dataset-bucket/browse/{type}/{version}/{year}/{month}/{day}/{pre}{year}{month}{day}{rest}"
+        ]
+      }
     }
   ]
 }
