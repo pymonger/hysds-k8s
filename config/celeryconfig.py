@@ -102,3 +102,17 @@ WORKER_MOUNT_BLACKLIST = [
     "/usr",
     "/var",
 ]
+
+BUCKET_PROFILES = [
+    {
+        "profile": "default",
+        "bucket_patterns": [ 
+            "/hysds-code-bucket/",
+            "/hysds-dataset-bucket/"
+        ]
+    },
+    {
+        "profile": "grfn-ro",
+        "bucket_patterns": None
+    }
+]
