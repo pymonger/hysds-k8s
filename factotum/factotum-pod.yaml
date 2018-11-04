@@ -85,6 +85,9 @@ spec:
     - mountPath: /home/ops/verdi/etc/datasets.json
       name: global-config
       subPath: datasets.json
+    - mountPath: /home/ops/verdi/etc/settings.conf
+      name: global-config
+      subPath: settings.conf
     - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
       name: config
       subPath: factotum.conf
