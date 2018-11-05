@@ -98,10 +98,10 @@ spec:
           name: supervisord
         resources:
           requests:
-            memory: "32Mi"
+            memory: "32Gi"
             cpu: "8.0"
           limits:
-            memory: "48Mi"
+            memory: "48Gi"
             cpu: "16.0"
         securityContext: 
           privileged: true 
