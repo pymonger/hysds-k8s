@@ -68,3 +68,5 @@ spec:
           emptyDir: {}
         - name: config
           emptyDir: {}
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

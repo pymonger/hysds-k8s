@@ -85,3 +85,5 @@ spec:
             claimName: grq-elasticsearch-pvc
         - name: config
           emptyDir: {}
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

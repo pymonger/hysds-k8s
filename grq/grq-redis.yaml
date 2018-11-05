@@ -59,3 +59,5 @@ spec:
             items:
             - key: redis-config
               path: redis.conf
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

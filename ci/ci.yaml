@@ -132,3 +132,5 @@ spec:
         emptyDir: {}
       - name: container-builder
         emptyDir: {}
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

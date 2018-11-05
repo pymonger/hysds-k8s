@@ -63,3 +63,5 @@ spec:
         - name: config
           configMap:
             name: hysds-mozart-config
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

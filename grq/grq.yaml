@@ -126,3 +126,5 @@ spec:
           name: hysds-grq-config
       - name: log
         emptyDir: {}
+      nodeSelector:
+        beta.kubernetes.io/instance-type: "3"

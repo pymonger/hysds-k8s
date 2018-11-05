@@ -78,3 +78,5 @@ spec:
       name: hysds-metrics-config
   - name: log
     emptyDir: {}
+  nodeSelector:
+    beta.kubernetes.io/instance-type: "3"
