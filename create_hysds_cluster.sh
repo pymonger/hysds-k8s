@@ -41,3 +41,6 @@ ${BASE_PATH}/create_factotum.sh
 
 # deploy ci services
 ${BASE_PATH}/create_ci.sh
+
+# deploy verdi services
+${BASE_PATH}/create_verdi.sh

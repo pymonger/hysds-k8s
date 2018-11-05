@@ -21,3 +21,6 @@ ${BASE_PATH}/delete_factotum.sh
 
 # delete ci services
 ${BASE_PATH}/delete_ci.sh
+
+# delete verdi services
+${BASE_PATH}/delete_verdi.sh

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: factotum
+  name: verdi
   labels:
-    component: factotum
-    run: factotum
+    component: verdi
+    run: verdi
 spec:
   type: NodePort
   ports:
@@ -24,27 +24,27 @@ spec:
     protocol: TCP
     name: supervisord
   selector:
-    component: factotum
-    run: factotum
+    component: verdi
+    run: verdi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: factotum
+  name: verdi
   labels:
-    component: factotum
-    run: factotum
+    component: verdi
+    run: verdi
 spec:
   selector:
     matchLabels:
-      component: factotum
-      run: factotum
+      component: verdi
+      run: verdi
   replicas: 1
   template:
     metadata:
       labels:
-        component: factotum
-        run: factotum
+        component: verdi
+        run: verdi
     spec:
       initContainers:
         - name: init-mozart-rabbitmq
@@ -83,7 +83,7 @@ spec:
             subPath: wait-for-it.sh
           command: ['sh', '/wait-for-it.sh', '-t', '0', 'grq:8878']
       containers:
-      - name: factotum
+      - name: verdi
         image: hysds/verdi:latest
         ports:
         - containerPort: 22
@@ -97,8 +97,12 @@ spec:
         - containerPort: 9001
           name: supervisord
         resources:
+          requests:
+            memory: "32Mi"
+            cpu: "8.0"
           limits:
-            cpu: "1.0"
+            memory: "48Mi"
+            cpu: "16.0"
         securityContext: 
           privileged: true 
         volumeMounts:
@@ -131,9 +135,12 @@ spec:
         - mountPath: /home/ops/verdi/etc/settings.conf
           name: global-config
           subPath: settings.conf
-        - mountPath: /home/ops/verdi/etc/conf.d/factotum.conf
+        - mountPath: /home/ops/verdi/etc/conf.d/grfn.conf
           name: config
-          subPath: factotum.conf
+          subPath: grfn.conf
+        - mountPath: /home/ops/verdi/etc/conf.d/aria.conf
+          name: config
+          subPath: aria.conf
         - mountPath: /home/ops/verdi/log
           name: log
       volumes:
@@ -151,6 +158,6 @@ spec:
           name: hysds-global-config
       - name: config
         configMap:
-          name: hysds-factotum-config
+          name: hysds-verdi-config
       - name: log
         emptyDir: {}
