@@ -1,7 +1,7 @@
 # globals
-variable "tenant_name" {}
+variable "project_domain_id" {}
 
-variable "tenant_id" {}
+variable "user_domain_name" {}
 
 variable "user_name" {}
 

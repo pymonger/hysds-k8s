@@ -1,10 +1,10 @@
 provider "openstack" {
-  user_name   = "${var.user_name}"
-  tenant_name = "${var.tenant_name}"
-  tenant_id   = "${var.tenant_id}"
-  password    = "${var.password}"
-  auth_url    = "${var.auth_url}"
-  region      = "${var.region}"
+  project_domain_id   = "${var.project_domain_id}"
+  user_domain_name    = "${var.user_domain_name}"
+  user_name           = "${var.user_name}"
+  password            = "${var.password}"
+  auth_url            = "${var.auth_url}"
+  region              = "${var.region}"
 }
 
 
@@ -18,7 +18,7 @@ resource "openstack_compute_instance_v2" "kube-node" {
   image_id               = "${var.kube-node["image_id"]}"
   flavor_id              = "${var.kube-node["flavor_id"]}"
   key_pair               = "${var.key_pair}"
-  security_groups        = "${var.security_group}"
+  security_groups        = ["${var.security_group}"]
 
   network {
     uuid = "${var.network_id}"
@@ -44,5 +44,5 @@ resource "openstack_compute_volume_attach_v2" "attached_kube-node_data" {
 
 resource "openstack_compute_floatingip_associate_v2" "kube-node_ip" {
   instance_id = "${element(openstack_compute_instance_v2.kube-node.*.id, count.index)}"
-  floating_ip = "${element(openstack_networking_floatingip_v2.kube-node_ip.*.id, count.index)}"
+  floating_ip = "${element(openstack_networking_floatingip_v2.kube-node_ip.*.address, count.index)}"
 }
