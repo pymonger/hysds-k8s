@@ -24,6 +24,11 @@ resource "openstack_compute_instance_v2" "kube-node" {
     uuid = "${var.network_id}"
     name = "${var.network_name}"
   }
+
+  provisioner "local-exec" {
+    command = "echo ${openstack_networking_floatingip_v2.kube-node_ip.*.address[count.index]} kube-node-${count.index} >> floating_ip_address.txt"
+    command = "echo ${self.access_ip_v4} kube-node-${count.index} >> private_ip_address.txt"
+  }
 }
 
 resource "openstack_blockstorage_volume_v2" "kube-node_data" {
